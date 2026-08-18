@@ -1,13 +1,35 @@
-<!DOCTYPE HTML>
-<html lang="en" style="min-height:100%;">
-<meta http-equiv="refresh" content="0; URL=https://www.notion.so/CS-180-Project-2-10a547ea7a2880f5a226c9c8a85cb99d"> <!-- edit this line -->
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-</head>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="The personal site of jkorr: unfinished ideas, essays, and things in progress."
+    />
+    <meta name="theme-color" content="#000000" />
+    <meta name="color-scheme" content="dark light" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>jkorr — a place for unfinished things</title>
+    <script>
+      (() => {
+        let theme = "dark";
 
-<body style="background:white;">
-    <h1>Loading...</h1>
-</body>
+        try {
+          if (window.localStorage.getItem("jkorr-theme") === "light") theme = "light";
+        } catch {
+          // Dark remains the default when storage is unavailable.
+        }
 
+        document.documentElement.dataset.theme = theme;
+        document.documentElement.style.colorScheme = theme;
+        document.querySelector('meta[name="theme-color"]').content =
+          theme === "light" ? "#FFFCF0" : "#000000";
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>
