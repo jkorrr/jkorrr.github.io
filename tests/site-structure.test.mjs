@@ -45,10 +45,10 @@ test("renders real now, work, and thoughts destinations", async () => {
   assert.match(app, /essay-placeholder/i);
   assert.match(app, /<span>@jkorr<\/span>/i);
   assert.doesNotMatch(app, /thoughts — coming soon/i);
-  assert.doesNotMatch(app, /IntroSplash|useCursorSpotlight|welcome to my corner/i);
+  assert.doesNotMatch(app, /IntroSplash|welcome to my corner/i);
 });
 
-test("uses clean self-hosted typography, social icons, and restrained motion", async () => {
+test("uses clean self-hosted typography, social icons, and a restrained spotlight", async () => {
   const app = await readFile(new URL("../src/App.tsx", import.meta.url), "utf8");
   const styles = await readFile(new URL("../src/styles.css", import.meta.url), "utf8");
   const main = await readFile(new URL("../src/main.tsx", import.meta.url), "utf8");
@@ -58,14 +58,19 @@ test("uses clean self-hosted typography, social icons, and restrained motion", a
   assert.match(app, /socialIcons\[link\.platform\]/i);
   assert.match(app, /social-placeholder/i);
   assert.match(app, /link coming soon/i);
-  assert.doesNotMatch(app, /matchMedia|requestAnimationFrame|spotlight/i);
+  assert.match(app, /matchMedia\("\(pointer: fine\)"\)/i);
+  assert.match(app, /matchMedia\("\(prefers-reduced-motion: reduce\)"\)/i);
+  assert.match(app, /requestAnimationFrame\(paint\)/i);
+  assert.match(app, /useCursorSpotlight\(\)/i);
   assert.match(app, /localStorage\.setItem\(themeStorageKey/i);
   assert.match(styles, /--background:\s*#050505/i);
   assert.match(styles, /--font-sans:\s*"Geist Variable"/i);
   assert.match(styles, /--font-serif:\s*Georgia/i);
   assert.match(styles, /:root\[data-theme="light"\]/i);
   assert.match(styles, /@media \(prefers-reduced-motion: reduce\)/i);
-  assert.doesNotMatch(styles, /spotlight|static-grid|hero-orb|floating-nav|pastel/i);
+  assert.match(styles, /html\[data-spotlight="true"\] body::before/i);
+  assert.match(styles, /@media \(pointer: fine\) and \(prefers-reduced-motion: no-preference\)/i);
+  assert.doesNotMatch(styles, /static-grid|hero-orb|floating-nav|pastel/i);
 });
 
 test("emits compiled script, styles, and favicon assets", async () => {

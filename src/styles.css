@@ -4,6 +4,9 @@
   --text: #f2f2ef;
   --muted: #91918b;
   --line: #292927;
+  --spotlight-color: rgba(77, 126, 171, 0.14);
+  --pointer-x: 50vw;
+  --pointer-y: 35vh;
   --font-sans: "Geist Variable", "Helvetica Neue", Helvetica, Arial, sans-serif;
   --font-serif: Georgia, "Times New Roman", serif;
   font-family: var(--font-sans);
@@ -17,6 +20,7 @@
   --text: #11110f;
   --muted: #656560;
   --line: #d8d8d2;
+  --spotlight-color: rgba(44, 103, 157, 0.09);
 }
 
 * {
@@ -38,6 +42,21 @@ body {
   font-size: 16px;
   line-height: 1.65;
   transition: background-color 180ms ease, color 180ms ease;
+}
+
+body::before {
+  position: fixed;
+  z-index: 0;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+  opacity: 0;
+  background: radial-gradient(
+    circle 25rem at var(--pointer-x) var(--pointer-y),
+    var(--spotlight-color),
+    transparent 72%
+  );
+  transition: opacity 220ms ease;
 }
 
 button,
@@ -83,8 +102,16 @@ button {
 }
 
 .site-shell {
+  position: relative;
+  z-index: 1;
   width: min(calc(100% - 3rem), 58rem);
   margin-inline: auto;
+}
+
+@media (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  html[data-spotlight="true"] body::before {
+    opacity: 1;
+  }
 }
 
 .site-header {

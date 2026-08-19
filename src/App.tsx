@@ -1,5 +1,5 @@
 import { motion, useReducedMotion } from "motion/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaGithub, FaInstagram, FaLinkedinIn } from "react-icons/fa6";
 import { siteContent, type SocialPlatform } from "./content";
 
@@ -12,6 +12,41 @@ const socialIcons = {
   linkedin: FaLinkedinIn,
   instagram: FaInstagram,
 } satisfies Record<SocialPlatform, typeof FaGithub>;
+
+function useCursorSpotlight() {
+  useEffect(() => {
+    const finePointer = window.matchMedia("(pointer: fine)");
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    if (!finePointer.matches || reducedMotion.matches) return;
+
+    const root = document.documentElement;
+    let frame = 0;
+    let pointerX = window.innerWidth / 2;
+    let pointerY = window.innerHeight / 2;
+
+    const paint = () => {
+      root.style.setProperty("--pointer-x", `${pointerX}px`);
+      root.style.setProperty("--pointer-y", `${pointerY}px`);
+      frame = 0;
+    };
+
+    const moveSpotlight = (event: PointerEvent) => {
+      pointerX = event.clientX;
+      pointerY = event.clientY;
+      if (!frame) frame = window.requestAnimationFrame(paint);
+    };
+
+    root.dataset.spotlight = "true";
+    window.addEventListener("pointermove", moveSpotlight, { passive: true });
+
+    return () => {
+      window.removeEventListener("pointermove", moveSpotlight);
+      if (frame) window.cancelAnimationFrame(frame);
+      delete root.dataset.spotlight;
+    };
+  }, []);
+}
 
 function useTheme() {
   const [theme, setTheme] = useState<Theme>(() =>
@@ -135,6 +170,7 @@ function Thoughts() {
 export default function App() {
   const reduceMotion = useReducedMotion();
   const { theme, toggleTheme } = useTheme();
+  useCursorSpotlight();
 
   return (
     <>
