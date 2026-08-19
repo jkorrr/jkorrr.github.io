@@ -4,51 +4,52 @@ import test from "node:test";
 
 const distRoot = new URL("../dist/", import.meta.url);
 
-test("builds a dark-first, metadata-rich static homepage", async () => {
+test("builds a minimal dark-first personal homepage", async () => {
   const html = await readFile(new URL("index.html", distRoot), "utf8");
-  assert.match(html, /<title>jkorr — thinking out loud, quietly<\/title>/i);
-  assert.match(html, /name="description"/i);
-  assert.match(html, /name="theme-color" content="#000000"/i);
+  assert.match(html, /<title>jathin<\/title>/i);
+  assert.match(html, /The personal site of Jathin/i);
+  assert.match(html, /name="theme-color" content="#050505"/i);
   assert.match(html, /name="color-scheme" content="dark light"/i);
   assert.match(html, /localStorage\.getItem\("jkorr-theme"\)/i);
   assert.match(html, /documentElement\.dataset\.theme/i);
   assert.match(html, /id="root"/i);
-  assert.doesNotMatch(html, /codex-preview|react-loading-skeleton/i);
 });
 
-test("keeps writing honest until real Substack essays are configured", async () => {
+test("renders real now, work, and thoughts destinations", async () => {
   const content = await readFile(new URL("../src/content.ts", import.meta.url), "utf8");
   const app = await readFile(new URL("../src/App.tsx", import.meta.url), "utf8");
 
+  assert.match(content, /hero:\s*"hi, i’m jathin\."/i);
   assert.match(content, /interface EssayPreview[\s\S]*title:[\s\S]*date:[\s\S]*summary:[\s\S]*href:/i);
-  assert.match(content, /identity:\s*"jkorr"/i);
-  assert.match(content, /longer thoughts will live on Substack/i);
-  assert.match(content, /some of my thoughts on the world/i);
-  assert.match(content, /items:\s*\[\]/i);
-  assert.doesNotMatch(content, /creations|curiosities|small tools|visual experiments/i);
-  assert.match(app, /siteContent\.essays\.items\.slice\(0, 3\)/i);
-  assert.match(app, /siteContent\.essays\.href\s*\?/i);
-  assert.match(app, /essays will live on Substack/i);
-  assert.match(app, /a work in progress/i);
-  assert.doesNotMatch(app, /PastelRibbon|CreationCardView|Marquee|OrbitField|interest-list|still becoming/i);
+  assert.match(content, /now:\s*"i’m a recent berkeley eecs grad working in sf/i);
+  assert.match(content, /work:[\s\S]*https:\/\/github\.com\/jkorrr/i);
+  assert.match(content, /thoughts:[\s\S]*items:\s*\[\]/i);
+  assert.doesNotMatch(content, /welcome to my corner|a place for unfinished things|creations|curiosities/i);
+
+  assert.match(app, /href="#now"/i);
+  assert.match(app, /href="#work"/i);
+  assert.match(app, /href="#thoughts"/i);
+  assert.match(app, /id="now"/i);
+  assert.match(app, /id="work"/i);
+  assert.match(app, /id="thoughts"/i);
+  assert.match(app, /thoughts — coming soon/i);
+  assert.doesNotMatch(app, /IntroSplash|useCursorSpotlight|welcome to my corner/i);
 });
 
-test("implements persistent themes, reduced motion, and a restrained spotlight", async () => {
+test("uses monochrome native typography and restrained motion", async () => {
   const app = await readFile(new URL("../src/App.tsx", import.meta.url), "utf8");
   const styles = await readFile(new URL("../src/styles.css", import.meta.url), "utf8");
   const main = await readFile(new URL("../src/main.tsx", import.meta.url), "utf8");
 
-  assert.match(main, /@fontsource-variable\/inter"/i);
-  assert.match(main, /@fontsource-variable\/inter-tight"/i);
-  assert.match(app, /matchMedia\("\(pointer: fine\)"\)/i);
-  assert.match(app, /matchMedia\("\(prefers-reduced-motion: reduce\)"\)/i);
-  assert.match(app, /requestAnimationFrame\(paint\)/i);
-  assert.match(app, /localStorage\.setItem\(THEME_STORAGE_KEY/i);
-  assert.match(styles, /--background:\s*#000000/i);
+  assert.doesNotMatch(main, /fontsource/i);
+  assert.doesNotMatch(app, /matchMedia|requestAnimationFrame|spotlight/i);
+  assert.match(app, /localStorage\.setItem\(themeStorageKey/i);
+  assert.match(styles, /--background:\s*#050505/i);
+  assert.match(styles, /--font-sans:\s*Arial, Helvetica, sans-serif/i);
+  assert.match(styles, /--font-serif:\s*Georgia/i);
   assert.match(styles, /:root\[data-theme="light"\]/i);
   assert.match(styles, /@media \(prefers-reduced-motion: reduce\)/i);
-  assert.match(styles, /@media \(pointer: coarse\)/i);
-  assert.doesNotMatch(styles, /static-grid|hero-orb|floating-nav|interest-list/i);
+  assert.doesNotMatch(styles, /spotlight|static-grid|hero-orb|floating-nav|pastel/i);
 });
 
 test("emits compiled script, styles, and favicon assets", async () => {

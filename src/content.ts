@@ -10,34 +10,30 @@ export interface EssayPreview {
   href: string;
 }
 
-export interface EssayDestination {
-  label: string;
-  description: string;
-  href?: string;
-  items: EssayPreview[];
-}
-
 export interface SiteContent {
-  identity: string;
-  eyebrow: string;
-  headline: string;
-  introduction: string;
+  hero: string;
   now: string;
-  essays: EssayDestination;
+  work: {
+    description: string;
+    href?: string;
+  };
+  thoughts: {
+    description: string;
+    href?: string;
+    items: EssayPreview[];
+  };
   socialLinks: SocialLink[];
 }
 
 export const siteContent: SiteContent = {
-  identity: "jkorr",
-  eyebrow: "welcome to my corner of the internet",
-  headline: "thinking out loud, quietly.",
-  introduction:
-    "hi, i’m jathin. i’m a recent berkeley eecs grad working in sf. welcome to my domain: random, unfinished thoughts, ideas, or opinions i have about the world.",
-  now:
-    "I’m thinking about writing, interfaces, small experiments, and whatever feels worth understanding next.",
-  essays: {
-    label: "some of my thoughts on the world",
-    description: "Longer thoughts will live on Substack.",
+  hero: "hi, i’m jathin.",
+  now: "i’m a recent berkeley eecs grad working in sf. right now, i’m thinking about writing, interfaces, small experiments, and whatever feels worth understanding next.",
+  work: {
+    description: "a small index of things i’ve worked on will live here.",
+    href: "https://github.com/jkorrr",
+  },
+  thoughts: {
+    description: "notes and longer thoughts will live here when they’re ready.",
     items: [],
   },
   socialLinks: [

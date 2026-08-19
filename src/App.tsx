@@ -1,253 +1,152 @@
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { type ReactNode, useEffect, useState } from "react";
+import { motion, useReducedMotion } from "motion/react";
+import { useState } from "react";
 import { siteContent } from "./content";
 
 type Theme = "dark" | "light";
 
-const THEME_STORAGE_KEY = "jkorr-theme";
-
-function IntroSplash({ onComplete }: { onComplete: () => void }) {
-  useEffect(() => {
-    const timer = window.setTimeout(onComplete, 920);
-    return () => window.clearTimeout(timer);
-  }, [onComplete]);
-
-  return (
-    <motion.div
-      className="intro-splash"
-      initial={{ opacity: 1 }}
-      exit={{ opacity: 0, transition: { duration: 0.18, ease: "easeOut" } }}
-      aria-label="Introduction"
-    >
-      <motion.p
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
-      >
-        hi, i’m <strong>jkorr</strong>
-      </motion.p>
-      <button type="button" onClick={onComplete}>
-        skip intro
-      </button>
-    </motion.div>
-  );
-}
-
-function RevealSection({
-  id,
-  labelledBy,
-  children,
-}: {
-  id: string;
-  labelledBy: string;
-  children: ReactNode;
-}) {
-  const reduceMotion = useReducedMotion();
-
-  return (
-    <motion.section
-      id={id}
-      className="journal-section"
-      aria-labelledby={labelledBy}
-      initial={reduceMotion ? false : { opacity: 0, y: 10 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.22 }}
-      transition={{ duration: 0.46, ease: [0.22, 1, 0.36, 1] }}
-    >
-      {children}
-    </motion.section>
-  );
-}
+const themeStorageKey = "jkorr-theme";
 
 function useTheme() {
-  const [theme, setThemeState] = useState<Theme>(() =>
+  const [theme, setTheme] = useState<Theme>(() =>
     document.documentElement.dataset.theme === "light" ? "light" : "dark",
   );
 
-  const setTheme = (nextTheme: Theme) => {
-    const root = document.documentElement;
-    root.dataset.theme = nextTheme;
-    root.style.colorScheme = nextTheme;
-    root.classList.add("is-theme-changing");
-    window.setTimeout(() => root.classList.remove("is-theme-changing"), 200);
-
-    try {
-      window.localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
-    } catch {
-      // Theme persistence is optional when storage is unavailable.
-    }
-
-    const themeColor = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
-    themeColor?.setAttribute("content", nextTheme === "dark" ? "#000000" : "#FFFCF0");
-    setThemeState(nextTheme);
+  const toggleTheme = () => {
+    const nextTheme = theme === "dark" ? "light" : "dark";
+    document.documentElement.dataset.theme = nextTheme;
+    localStorage.setItem(themeStorageKey, nextTheme);
+    document
+      .querySelector('meta[name="theme-color"]')
+      ?.setAttribute("content", nextTheme === "dark" ? "#050505" : "#F7F7F4");
+    setTheme(nextTheme);
   };
 
-  return { theme, setTheme };
+  return { theme, toggleTheme };
 }
 
-function useCursorSpotlight() {
-  useEffect(() => {
-    const finePointer = window.matchMedia("(pointer: fine)");
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const root = document.documentElement;
-
-    if (!finePointer.matches || reducedMotion.matches) return;
-
-    let frame = 0;
-    let pointerX = window.innerWidth * 0.72;
-    let pointerY = window.innerHeight * 0.3;
-
-    const paint = () => {
-      root.style.setProperty("--pointer-x", `${pointerX}px`);
-      root.style.setProperty("--pointer-y", `${pointerY}px`);
-      frame = 0;
-    };
-
-    const onPointerMove = (event: PointerEvent) => {
-      pointerX = event.clientX;
-      pointerY = event.clientY;
-      if (!frame) frame = window.requestAnimationFrame(paint);
-    };
-
-    root.classList.add("has-spotlight");
-    window.addEventListener("pointermove", onPointerMove, { passive: true });
-
-    return () => {
-      root.classList.remove("has-spotlight");
-      window.removeEventListener("pointermove", onPointerMove);
-      if (frame) window.cancelAnimationFrame(frame);
-    };
-  }, []);
-}
-
-function Header({ theme, onThemeChange }: { theme: Theme; onThemeChange: (theme: Theme) => void }) {
-  const nextTheme = theme === "dark" ? "light" : "dark";
-
+function Header({ theme, onToggleTheme }: { theme: Theme; onToggleTheme: () => void }) {
   return (
-    <header className="site-header">
-      <a className="wordmark" href="#top" aria-label="jkorr, back to top">
-        jkorr<span>.</span>
-      </a>
-      <nav aria-label="Primary navigation">
+    <header className="site-header" aria-label="site header">
+      <div className="social-links" aria-label="social links">
+        {siteContent.socialLinks.map((link) => (
+          <a key={link.href} href={link.href} target="_blank" rel="noreferrer">
+            {link.label}
+          </a>
+        ))}
+      </div>
+
+      <nav className="site-nav" aria-label="primary navigation">
         <a href="#now">now</a>
-        <a href="#writing">writing</a>
-        <a href="#about">about</a>
-        <button
-          className="theme-toggle"
-          type="button"
-          aria-label={`Switch to ${nextTheme} theme`}
-          aria-pressed={theme === "light"}
-          onClick={() => onThemeChange(nextTheme)}
-        >
-          {nextTheme} <span aria-hidden="true">↗</span>
+        <a href="#work">work</a>
+        <a href="#thoughts">thoughts</a>
+        <button type="button" onClick={onToggleTheme} aria-label={`switch to ${theme === "dark" ? "light" : "dark"} mode`}>
+          {theme === "dark" ? "light" : "dark"}
         </button>
       </nav>
     </header>
   );
 }
 
-function WritingSection() {
-  const essays = siteContent.essays.items.slice(0, 3);
+function Section({
+  id,
+  title,
+  children,
+}: {
+  id: string;
+  title: string;
+  children: React.ReactNode;
+}) {
+  const reduceMotion = useReducedMotion();
 
   return (
-    <RevealSection id="writing" labelledBy="writing-title">
-      <p className="section-label">{siteContent.essays.label}</p>
-      <h2 id="writing-title">words, when they’re ready.</h2>
-      <p className="section-introduction">{siteContent.essays.description}</p>
+    <motion.section
+      id={id}
+      className="index-section"
+      initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+      whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.25 }}
+      transition={{ duration: 0.4, ease: [0.2, 0.8, 0.2, 1] }}
+      aria-labelledby={`${id}-title`}
+    >
+      <h2 id={`${id}-title`}>{title}</h2>
+      <div className="section-content">{children}</div>
+    </motion.section>
+  );
+}
 
-      {essays.length ? (
+function Thoughts() {
+  const essays = siteContent.thoughts.items.slice(0, 3);
+
+  return (
+    <Section id="thoughts" title="thoughts">
+      <p>{siteContent.thoughts.description}</p>
+
+      {essays.length > 0 ? (
         <ol className="essay-list">
           {essays.map((essay) => (
             <li key={essay.href}>
               <a href={essay.href} target="_blank" rel="noreferrer">
-                <span className="essay-heading">
-                  <strong>{essay.title}</strong>
-                  <time>{essay.date}</time>
-                </span>
-                <span className="essay-summary">{essay.summary}</span>
-                <span className="essay-arrow" aria-hidden="true">↗</span>
+                <span>{essay.title}</span>
+                <time dateTime={essay.date}>{essay.date}</time>
               </a>
+              <p>{essay.summary}</p>
             </li>
           ))}
         </ol>
+      ) : siteContent.thoughts.href ? (
+        <a className="text-link" href={siteContent.thoughts.href} target="_blank" rel="noreferrer">
+          read my thoughts <span aria-hidden="true">↗</span>
+        </a>
       ) : (
-        <div className="empty-writing">
-          <span>essays will live on Substack</span>
-          {siteContent.essays.href ? (
-            <a href={siteContent.essays.href} target="_blank" rel="noreferrer">
-              visit Substack <span aria-hidden="true">↗</span>
-            </a>
-          ) : null}
-        </div>
+        <span className="quiet-label">thoughts — coming soon</span>
       )}
-    </RevealSection>
+    </Section>
   );
 }
 
-export function App() {
+export default function App() {
   const reduceMotion = useReducedMotion();
-  const { theme, setTheme } = useTheme();
-  const [showIntro, setShowIntro] = useState(
-    () => !window.matchMedia("(prefers-reduced-motion: reduce)").matches,
-  );
-
-  useCursorSpotlight();
+  const { theme, toggleTheme } = useTheme();
 
   return (
     <>
-      <AnimatePresence>{showIntro ? <IntroSplash onComplete={() => setShowIntro(false)} /> : null}</AnimatePresence>
-      <a className="skip-link" href="#main-content">Skip to the main content</a>
+      <a className="skip-link" href="#main-content">
+        skip to content
+      </a>
 
-      <div className="site-shell">
-        <Header theme={theme} onThemeChange={setTheme} />
+      <div className="site-shell" id="top">
+        <Header theme={theme} onToggleTheme={toggleTheme} />
 
         <main id="main-content">
-          <section className="hero" id="top" aria-labelledby="hero-title">
-            <motion.div
-              initial={reduceMotion ? false : { opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.52, delay: 0.06, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <p className="eyebrow">{siteContent.eyebrow}</p>
-              <h1 id="hero-title">{siteContent.headline}</h1>
-              <p className="hero-introduction" id="about">{siteContent.introduction}</p>
-              <div className="hero-links">
-                <a href="#now">keep reading <span aria-hidden="true">↓</span></a>
-                <a
-                  href={siteContent.socialLinks[0].href}
-                  target="_blank"
-                  rel="noreferrer"
-                  aria-label="Visit jkorr on GitHub, opens in a new tab"
-                >
-                  github <span aria-hidden="true">↗</span>
-                </a>
-              </div>
-            </motion.div>
-          </section>
+          <motion.section
+            className="hero"
+            initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, ease: [0.2, 0.8, 0.2, 1] }}
+            aria-labelledby="hero-title"
+          >
+            <h1 id="hero-title">{siteContent.hero}</h1>
+          </motion.section>
 
-          <RevealSection id="now" labelledBy="now-title">
-            <p className="section-label">now</p>
-            <h2 id="now-title">right now.</h2>
-            <p className="section-prose">{siteContent.now}</p>
-          </RevealSection>
+          <Section id="now" title="now">
+            <p>{siteContent.now}</p>
+          </Section>
 
-          <WritingSection />
+          <Section id="work" title="work">
+            <p>{siteContent.work.description}</p>
+            {siteContent.work.href ? (
+              <a className="text-link" href={siteContent.work.href} target="_blank" rel="noreferrer">
+                see my work <span aria-hidden="true">↗</span>
+              </a>
+            ) : null}
+          </Section>
+
+          <Thoughts />
         </main>
 
-        <footer className="footer">
-          <div>
-            <a className="footer-wordmark" href="#top">jkorr<span>.</span></a>
-            <p>a work in progress</p>
-          </div>
-          <div className="footer-links">
-            {siteContent.socialLinks.map((link) => (
-              <a href={link.href} key={link.label} target="_blank" rel="noreferrer">
-                {link.label} <span aria-hidden="true">↗</span>
-              </a>
-            ))}
-            <a href="#top">back to top ↑</a>
-          </div>
-          <p className="copyright">© {new Date().getFullYear()} jkorr</p>
+        <footer className="site-footer">
+          <span>jathin</span>
+          <a href="#top">back to top ↑</a>
         </footer>
       </div>
     </>
