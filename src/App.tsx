@@ -36,8 +36,20 @@ function Header({ theme, onToggleTheme }: { theme: Theme; onToggleTheme: () => v
     <header className="site-header" aria-label="site header">
       <div className="social-links" aria-label="social links">
         {siteContent.socialLinks.map((link) => {
-          if (!link.href) return null;
           const Icon = socialIcons[link.platform];
+
+          if (!link.href) {
+            return (
+              <span
+                key={link.platform}
+                className="social-placeholder"
+                aria-label={`${link.label} link coming soon`}
+                title={`${link.label} — coming soon`}
+              >
+                <Icon aria-hidden="true" />
+              </span>
+            );
+          }
 
           return (
             <a key={link.platform} href={link.href} target="_blank" rel="noreferrer" aria-label={link.label} title={link.label}>
@@ -142,6 +154,9 @@ export default function App() {
 
           <Section id="now" title="now">
             <p>{siteContent.now}</p>
+            <a className="text-link" href="#thoughts">
+              learn more here <span aria-hidden="true">↓</span>
+            </a>
           </Section>
 
           <Section id="work" title="work">

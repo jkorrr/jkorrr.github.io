@@ -110,7 +110,8 @@ button {
   gap: 0.9rem;
 }
 
-.social-links a {
+.social-links a,
+.social-placeholder {
   display: grid;
   place-items: center;
   width: 1.3rem;
@@ -118,6 +119,11 @@ button {
   color: var(--muted);
   font-size: 1.05rem;
   transition: color 140ms ease, transform 140ms ease;
+}
+
+.social-placeholder {
+  cursor: default;
+  opacity: 0.42;
 }
 
 .social-links a:hover {

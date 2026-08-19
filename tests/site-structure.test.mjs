@@ -21,7 +21,7 @@ test("renders real now, work, and thoughts destinations", async () => {
 
   assert.match(content, /hero:\s*"hi, i’m jathin\."/i);
   assert.match(content, /interface EssayPreview[\s\S]*title:[\s\S]*date:[\s\S]*summary:[\s\S]*href:/i);
-  assert.match(content, /now:\s*"i’m a recent berkeley eecs grad working in sf/i);
+  assert.match(content, /now:\s*"i’m jathin, a berkeley eecs grad now based in sf/i);
   assert.match(content, /work:[\s\S]*https:\/\/github\.com\/jkorrr/i);
   assert.match(content, /thoughts:[\s\S]*items:\s*\[\]/i);
   assert.doesNotMatch(content, /welcome to my corner|a place for unfinished things|creations|curiosities/i);
@@ -29,6 +29,7 @@ test("renders real now, work, and thoughts destinations", async () => {
   assert.match(app, /href="#now"/i);
   assert.match(app, /href="#work"/i);
   assert.match(app, /href="#thoughts"/i);
+  assert.match(app, /learn more here/i);
   assert.match(app, /id="now"/i);
   assert.match(app, /id="work"/i);
   assert.match(app, /id="thoughts"/i);
@@ -44,7 +45,8 @@ test("uses clean self-hosted typography, social icons, and restrained motion", a
   assert.match(main, /@fontsource-variable\/geist\/wght\.css/i);
   assert.match(app, /FaGithub/i);
   assert.match(app, /socialIcons\[link\.platform\]/i);
-  assert.match(app, /if \(!link\.href\) return null/i);
+  assert.match(app, /social-placeholder/i);
+  assert.match(app, /link coming soon/i);
   assert.doesNotMatch(app, /matchMedia|requestAnimationFrame|spotlight/i);
   assert.match(app, /localStorage\.setItem\(themeStorageKey/i);
   assert.match(styles, /--background:\s*#050505/i);
