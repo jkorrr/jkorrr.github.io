@@ -241,6 +241,11 @@ a { -webkit-tap-highlight-color: transparent; }
   text-transform: uppercase;
 }
 
+.eyebrow {
+  letter-spacing: 0.04em;
+  text-transform: lowercase;
+}
+
 .hero h1,
 .journal-section h2 {
   color: var(--text-strong);
@@ -264,16 +269,6 @@ a { -webkit-tap-highlight-color: transparent; }
   font-weight: 450;
   line-height: 1.58;
   letter-spacing: -0.01em;
-}
-
-.hero-about {
-  max-width: 34rem;
-  margin: 1.2rem 0 0;
-  color: var(--text);
-  font-size: 0.94rem;
-  font-weight: 450;
-  line-height: 1.62;
-  letter-spacing: -0.008em;
 }
 
 .hero-links {

@@ -210,8 +210,7 @@ export function App() {
             >
               <p className="eyebrow">{siteContent.eyebrow}</p>
               <h1 id="hero-title">{siteContent.headline}</h1>
-              <p className="hero-introduction">{siteContent.introduction}</p>
-              <p className="hero-about" id="about">{siteContent.about}</p>
+              <p className="hero-introduction" id="about">{siteContent.introduction}</p>
               <div className="hero-links">
                 <a href="#now">keep reading <span aria-hidden="true">↓</span></a>
                 <a

@@ -23,7 +23,6 @@ export interface SiteContent {
   headline: string;
   introduction: string;
   now: string;
-  about: string;
   essays: EssayDestination;
   socialLinks: SocialLink[];
 }
@@ -31,13 +30,11 @@ export interface SiteContent {
 export const siteContent: SiteContent = {
   identity: "jkorr",
   eyebrow: "welcome to my corner of the internet",
-  headline: "a place for unfinished things.",
+  headline: "thinking out loud, quietly.",
   introduction:
-    "Ideas, notes, and work in progress—kept here while they find their shape.",
+    "hi, i’m jathin. i’m a recent berkeley eecs grad working in sf. welcome to my domain: random, unfinished thoughts, ideas, or opinions i have about the world.",
   now:
     "I’m thinking about writing, interfaces, small experiments, and whatever feels worth understanding next.",
-  about:
-    "I’m jkorr. This is where I collect ideas, experiments, and work in progress—especially the things that are still finding their shape.",
   essays: {
     label: "some of my thoughts on the world",
     description: "Longer thoughts will live on Substack.",

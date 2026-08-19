@@ -6,7 +6,7 @@ const distRoot = new URL("../dist/", import.meta.url);
 
 test("builds a dark-first, metadata-rich static homepage", async () => {
   const html = await readFile(new URL("index.html", distRoot), "utf8");
-  assert.match(html, /<title>jkorr — a place for unfinished things<\/title>/i);
+  assert.match(html, /<title>jkorr — thinking out loud, quietly<\/title>/i);
   assert.match(html, /name="description"/i);
   assert.match(html, /name="theme-color" content="#000000"/i);
   assert.match(html, /name="color-scheme" content="dark light"/i);
