@@ -121,9 +121,7 @@ function Thoughts() {
         <a className="text-link" href={siteContent.thoughts.href} target="_blank" rel="noreferrer">
           read my thoughts <span aria-hidden="true">↗</span>
         </a>
-      ) : (
-        <span className="quiet-label">thoughts — coming soon</span>
-      )}
+      ) : null}
     </Section>
   );
 }
@@ -172,7 +170,7 @@ export default function App() {
         </main>
 
         <footer className="site-footer">
-          <span>jathin</span>
+          <span>@jkorr</span>
           <a href="#top">back to top ↑</a>
         </footer>
       </div>

@@ -21,8 +21,10 @@ test("renders real now, work, and thoughts destinations", async () => {
 
   assert.match(content, /hero:\s*"hi, i’m jathin\."/i);
   assert.match(content, /interface EssayPreview[\s\S]*title:[\s\S]*date:[\s\S]*summary:[\s\S]*href:/i);
-  assert.match(content, /now:\s*"i’m jathin, a recent berkeley grad from la/i);
+  assert.match(content, /now:\s*"i’m a recent berkeley eecs grad from la/i);
   assert.match(content, /right now, i’m exploring infra \+ performance problems @ openai/i);
+  assert.match(content, /a small index of things i’ve done and am exploring/i);
+  assert.match(content, /description:\s*"WIP, coming soon"/i);
   assert.match(content, /work:[\s\S]*https:\/\/github\.com\/jkorrr/i);
   assert.match(content, /thoughts:[\s\S]*items:\s*\[\]/i);
   assert.doesNotMatch(content, /welcome to my corner|a place for unfinished things|creations|curiosities/i);
@@ -34,7 +36,8 @@ test("renders real now, work, and thoughts destinations", async () => {
   assert.match(app, /id="now"/i);
   assert.match(app, /id="work"/i);
   assert.match(app, /id="thoughts"/i);
-  assert.match(app, /thoughts — coming soon/i);
+  assert.match(app, /<span>@jkorr<\/span>/i);
+  assert.doesNotMatch(app, /thoughts — coming soon/i);
   assert.doesNotMatch(app, /IntroSplash|useCursorSpotlight|welcome to my corner/i);
 });
 
