@@ -225,10 +225,21 @@ button {
   border-top: 1px solid var(--line);
 }
 
-.essay-list a {
+.essay-row {
   display: flex;
+  align-items: baseline;
   justify-content: space-between;
   gap: 1rem;
+}
+
+.essay-list a {
+  display: inline-block;
+}
+
+.essay-placeholder {
+  color: var(--muted);
+  font-size: 0.88rem;
+  letter-spacing: 0.02em;
 }
 
 .essay-list time,

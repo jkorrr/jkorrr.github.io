@@ -99,7 +99,7 @@ function Section({
 }
 
 function Thoughts() {
-  const essays = siteContent.thoughts.items.slice(0, 3);
+  const essays = siteContent.thoughts.items.slice(0, 5);
 
   return (
     <Section id="thoughts" title="thoughts">
@@ -108,12 +108,18 @@ function Thoughts() {
       {essays.length > 0 ? (
         <ol className="essay-list">
           {essays.map((essay) => (
-            <li key={essay.href}>
-              <a href={essay.href} target="_blank" rel="noreferrer">
-                <span>{essay.title}</span>
-                <time dateTime={essay.date}>{essay.date}</time>
-              </a>
-              <p>{essay.summary}</p>
+            <li key={essay.href ?? essay.title}>
+              <div className="essay-row">
+                {essay.href ? (
+                  <a href={essay.href} target="_blank" rel="noreferrer">
+                    {essay.title} <span aria-hidden="true">↗</span>
+                  </a>
+                ) : (
+                  <span className="essay-placeholder">{essay.title}</span>
+                )}
+                {essay.date ? <time dateTime={essay.date}>{essay.date}</time> : null}
+              </div>
+              {essay.summary ? <p>{essay.summary}</p> : null}
             </li>
           ))}
         </ol>
