@@ -54,10 +54,12 @@ export const siteContent: SiteContent = {
     {
       label: "linkedin",
       platform: "linkedin",
+      href: "https://www.linkedin.com/in/jathin-k",
     },
     {
       label: "instagram",
       platform: "instagram",
+      href: "https://www.instagram.com/jathin_korrapati",
     },
   ],
 };

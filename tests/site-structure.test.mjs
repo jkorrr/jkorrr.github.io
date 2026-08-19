@@ -29,6 +29,8 @@ test("renders real now, work, and thoughts destinations", async () => {
   assert.match(content, /work:[\s\S]*https:\/\/github\.com\/jkorrr/i);
   assert.match(content, /PLACEHOLDER ESSAY 01/i);
   assert.match(content, /PLACEHOLDER ESSAY 05/i);
+  assert.match(content, /https:\/\/www\.linkedin\.com\/in\/jathin-k/i);
+  assert.match(content, /https:\/\/www\.instagram\.com\/jathin_korrapati/i);
   assert.doesNotMatch(content, /welcome to my corner|a place for unfinished things|creations|curiosities/i);
 
   assert.match(app, /href="#now"/i);
