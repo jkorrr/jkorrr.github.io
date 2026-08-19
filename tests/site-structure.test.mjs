@@ -36,16 +36,19 @@ test("renders real now, work, and thoughts destinations", async () => {
   assert.doesNotMatch(app, /IntroSplash|useCursorSpotlight|welcome to my corner/i);
 });
 
-test("uses monochrome native typography and restrained motion", async () => {
+test("uses clean self-hosted typography, social icons, and restrained motion", async () => {
   const app = await readFile(new URL("../src/App.tsx", import.meta.url), "utf8");
   const styles = await readFile(new URL("../src/styles.css", import.meta.url), "utf8");
   const main = await readFile(new URL("../src/main.tsx", import.meta.url), "utf8");
 
-  assert.doesNotMatch(main, /fontsource/i);
+  assert.match(main, /@fontsource-variable\/geist\/wght\.css/i);
+  assert.match(app, /FaGithub/i);
+  assert.match(app, /socialIcons\[link\.platform\]/i);
+  assert.match(app, /if \(!link\.href\) return null/i);
   assert.doesNotMatch(app, /matchMedia|requestAnimationFrame|spotlight/i);
   assert.match(app, /localStorage\.setItem\(themeStorageKey/i);
   assert.match(styles, /--background:\s*#050505/i);
-  assert.match(styles, /--font-sans:\s*Arial, Helvetica, sans-serif/i);
+  assert.match(styles, /--font-sans:\s*"Geist Variable"/i);
   assert.match(styles, /--font-serif:\s*Georgia/i);
   assert.match(styles, /:root\[data-theme="light"\]/i);
   assert.match(styles, /@media \(prefers-reduced-motion: reduce\)/i);

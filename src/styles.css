@@ -4,7 +4,7 @@
   --text: #f2f2ef;
   --muted: #91918b;
   --line: #292927;
-  --font-sans: Arial, Helvetica, sans-serif;
+  --font-sans: "Geist Variable", "Helvetica Neue", Helvetica, Arial, sans-serif;
   --font-serif: Georgia, "Times New Roman", serif;
   font-family: var(--font-sans);
   font-synthesis: none;
@@ -106,6 +106,26 @@ button {
   gap: 1.2rem;
 }
 
+.social-links {
+  gap: 0.9rem;
+}
+
+.social-links a {
+  display: grid;
+  place-items: center;
+  width: 1.3rem;
+  height: 1.3rem;
+  color: var(--muted);
+  font-size: 1.05rem;
+  transition: color 140ms ease, transform 140ms ease;
+}
+
+.social-links a:hover {
+  color: var(--text);
+  transform: translateY(-1px);
+  text-decoration: none;
+}
+
 .social-links a,
 .site-nav a,
 .site-nav button {
@@ -126,15 +146,15 @@ button {
 .hero {
   display: flex;
   align-items: center;
-  min-height: clamp(24rem, 62vh, 38rem);
-  max-width: 46rem;
+  min-height: clamp(21rem, 48vh, 29rem);
+  max-width: 54rem;
 }
 
 .hero h1 {
-  max-width: 11ch;
+  max-width: 12ch;
   margin: 0;
   font-family: var(--font-serif);
-  font-size: clamp(3.25rem, 9vw, 6.25rem);
+  font-size: clamp(4rem, 10vw, 7.5rem);
   font-weight: 400;
   line-height: 0.96;
   letter-spacing: -0.055em;
@@ -158,8 +178,10 @@ button {
 
 .section-content p {
   margin: 0;
-  font-size: clamp(1rem, 1.7vw, 1.1rem);
-  line-height: 1.65;
+  font-size: clamp(1.02rem, 1.7vw, 1.12rem);
+  font-weight: 420;
+  line-height: 1.58;
+  letter-spacing: -0.015em;
 }
 
 .section-content > * + * {
@@ -241,11 +263,11 @@ button {
   }
 
   .hero {
-    min-height: 23rem;
+    min-height: 20rem;
   }
 
   .hero h1 {
-    font-size: clamp(3.1rem, 17vw, 4.5rem);
+    font-size: clamp(3.6rem, 18vw, 4.9rem);
   }
 
   .index-section {

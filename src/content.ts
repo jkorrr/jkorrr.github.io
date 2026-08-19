@@ -1,6 +1,9 @@
+export type SocialPlatform = "github" | "linkedin" | "instagram";
+
 export interface SocialLink {
   label: string;
-  href: string;
+  platform: SocialPlatform;
+  href?: string;
 }
 
 export interface EssayPreview {
@@ -39,7 +42,16 @@ export const siteContent: SiteContent = {
   socialLinks: [
     {
       label: "github",
+      platform: "github",
       href: "https://github.com/jkorrr",
+    },
+    {
+      label: "linkedin",
+      platform: "linkedin",
+    },
+    {
+      label: "instagram",
+      platform: "instagram",
     },
   ],
 };

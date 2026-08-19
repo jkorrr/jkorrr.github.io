@@ -1,10 +1,17 @@
 import { motion, useReducedMotion } from "motion/react";
 import { useState } from "react";
-import { siteContent } from "./content";
+import { FaGithub, FaInstagram, FaLinkedinIn } from "react-icons/fa6";
+import { siteContent, type SocialPlatform } from "./content";
 
 type Theme = "dark" | "light";
 
 const themeStorageKey = "jkorr-theme";
+
+const socialIcons = {
+  github: FaGithub,
+  linkedin: FaLinkedinIn,
+  instagram: FaInstagram,
+} satisfies Record<SocialPlatform, typeof FaGithub>;
 
 function useTheme() {
   const [theme, setTheme] = useState<Theme>(() =>
@@ -28,11 +35,16 @@ function Header({ theme, onToggleTheme }: { theme: Theme; onToggleTheme: () => v
   return (
     <header className="site-header" aria-label="site header">
       <div className="social-links" aria-label="social links">
-        {siteContent.socialLinks.map((link) => (
-          <a key={link.href} href={link.href} target="_blank" rel="noreferrer">
-            {link.label}
-          </a>
-        ))}
+        {siteContent.socialLinks.map((link) => {
+          if (!link.href) return null;
+          const Icon = socialIcons[link.platform];
+
+          return (
+            <a key={link.platform} href={link.href} target="_blank" rel="noreferrer" aria-label={link.label} title={link.label}>
+              <Icon aria-hidden="true" />
+            </a>
+          );
+        })}
       </div>
 
       <nav className="site-nav" aria-label="primary navigation">
