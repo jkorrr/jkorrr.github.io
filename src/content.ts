@@ -32,7 +32,7 @@ export const siteContent: SiteContent = {
   hero: "hi, i’m jathin.",
   now: "i’m a recent berkeley eecs grad, raised in la. i write about my raw, unfiltered thoughts on the world across travel, tech, fitness, & food. right now, i’m exploring infra + performance problems @ openai.",
   work: {
-    description: "a small index of things i’ve done and am exploring.",
+    description: "a small index of things i’m exploring.",
     href: "https://github.com/jkorrr",
   },
   thoughts: {

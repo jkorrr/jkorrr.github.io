@@ -24,7 +24,7 @@ test("renders real now, work, and thoughts destinations", async () => {
   assert.match(content, /now:\s*"i’m a recent berkeley eecs grad, raised in la/i);
   assert.match(content, /raw, unfiltered thoughts on the world across travel, tech, fitness, & food/i);
   assert.match(content, /right now, i’m exploring infra \+ performance problems @ openai/i);
-  assert.match(content, /a small index of things i’ve done and am exploring/i);
+  assert.match(content, /a small index of things i’m exploring/i);
   assert.match(content, /description:\s*"some of my more well articulated thoughts\."/i);
   assert.match(content, /work:[\s\S]*https:\/\/github\.com\/jkorrr/i);
   assert.match(content, /PLACEHOLDER ESSAY 01/i);
