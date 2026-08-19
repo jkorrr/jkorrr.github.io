@@ -21,7 +21,8 @@ test("renders real now, work, and thoughts destinations", async () => {
 
   assert.match(content, /hero:\s*"hi, i’m jathin\."/i);
   assert.match(content, /interface EssayPreview[\s\S]*title:[\s\S]*date:[\s\S]*summary:[\s\S]*href:/i);
-  assert.match(content, /now:\s*"i’m jathin, a berkeley eecs grad now based in sf/i);
+  assert.match(content, /now:\s*"i’m jathin, a recent berkeley grad from la/i);
+  assert.match(content, /right now, i’m exploring infra \+ performance problems @ openai/i);
   assert.match(content, /work:[\s\S]*https:\/\/github\.com\/jkorrr/i);
   assert.match(content, /thoughts:[\s\S]*items:\s*\[\]/i);
   assert.doesNotMatch(content, /welcome to my corner|a place for unfinished things|creations|curiosities/i);

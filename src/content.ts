@@ -30,7 +30,7 @@ export interface SiteContent {
 
 export const siteContent: SiteContent = {
   hero: "hi, i’m jathin.",
-  now: "i’m jathin, a berkeley eecs grad now based in sf. i write about my experiences, opinions on the world, travel, and my raw, unfiltered thoughts.",
+  now: "i’m jathin, a recent berkeley grad from la. i write about my experiences, opinions on the world, travel, and my raw, unfiltered thoughts. right now, i’m exploring infra + performance problems @ openai.",
   work: {
     description: "a small index of things i’ve worked on will live here.",
     href: "https://github.com/jkorrr",
