@@ -4,7 +4,7 @@
   --text: #f2f2ef;
   --muted: #91918b;
   --line: #292927;
-  --spotlight-color: rgba(77, 126, 171, 0.14);
+  --spotlight-color: rgba(77, 126, 171, 0.22);
   --pointer-x: 50vw;
   --pointer-y: 35vh;
   --font-sans: "Geist Variable", "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -20,7 +20,7 @@
   --text: #11110f;
   --muted: #656560;
   --line: #d8d8d2;
-  --spotlight-color: rgba(44, 103, 157, 0.09);
+  --spotlight-color: rgba(44, 103, 157, 0.15);
 }
 
 * {

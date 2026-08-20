@@ -69,6 +69,8 @@ test("uses clean self-hosted typography, social icons, and a restrained spotligh
   assert.match(styles, /:root\[data-theme="light"\]/i);
   assert.match(styles, /@media \(prefers-reduced-motion: reduce\)/i);
   assert.match(styles, /html\[data-spotlight="true"\] body::before/i);
+  assert.match(styles, /rgba\(77, 126, 171, 0\.22\)/i);
+  assert.match(styles, /rgba\(44, 103, 157, 0\.15\)/i);
   assert.match(styles, /@media \(pointer: fine\) and \(prefers-reduced-motion: no-preference\)/i);
   assert.doesNotMatch(styles, /static-grid|hero-orb|floating-nav|pastel/i);
 });
