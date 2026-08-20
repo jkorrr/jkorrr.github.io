@@ -29,11 +29,6 @@ test("renders real now, work, and thoughts destinations", async () => {
   assert.match(content, /work:[\s\S]*https:\/\/github\.com\/jkorrr/i);
   assert.match(content, /PLACEHOLDER ESSAY 01/i);
   assert.match(content, /PLACEHOLDER ESSAY 05/i);
-  assert.match(content, /label:\s*"projects"/i);
-  assert.match(content, /label:\s*"lab"/i);
-  assert.match(content, /label:\s*"field notes"/i);
-  assert.match(content, /label:\s*"fragments"/i);
-  assert.match(content, /label:\s*"shelf"/i);
   assert.match(content, /https:\/\/www\.linkedin\.com\/in\/jathin-k/i);
   assert.match(content, /https:\/\/www\.instagram\.com\/jathin_korrapati/i);
   assert.doesNotMatch(content, /welcome to my corner|a place for unfinished things|creations|curiosities/i);
@@ -48,10 +43,6 @@ test("renders real now, work, and thoughts destinations", async () => {
   assert.match(app, /items\.slice\(0, 5\)/i);
   assert.match(app, /essay\.href \?/i);
   assert.match(app, /essay-placeholder/i);
-  assert.match(app, /function CategoryList/i);
-  assert.match(app, /<h3>essays<\/h3>/i);
-  assert.match(app, /siteContent\.work\.categories/i);
-  assert.match(app, /siteContent\.thoughts\.categories/i);
   assert.match(app, /<span>@jkorr<\/span>/i);
   assert.doesNotMatch(app, /thoughts — coming soon/i);
   assert.doesNotMatch(app, /IntroSplash|welcome to my corner/i);

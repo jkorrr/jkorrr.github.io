@@ -1,7 +1,7 @@
 import { motion, useReducedMotion } from "motion/react";
 import { useEffect, useState } from "react";
 import { FaGithub, FaInstagram, FaLinkedinIn } from "react-icons/fa6";
-import { siteContent, type ContentCategory, type SocialPlatform } from "./content";
+import { siteContent, type SocialPlatform } from "./content";
 
 type Theme = "dark" | "light";
 
@@ -133,23 +133,6 @@ function Section({
   );
 }
 
-function CategoryList({ items }: { items: ContentCategory[] }) {
-  return (
-    <ul className="category-list">
-      {items.map((item) => (
-        <li key={item.label}>
-          {item.href ? (
-            <a href={item.href}>{item.label}</a>
-          ) : (
-            <span className="category-name">{item.label}</span>
-          )}
-          <p>{item.description}</p>
-        </li>
-      ))}
-    </ul>
-  );
-}
-
 function Thoughts() {
   const essays = siteContent.thoughts.items.slice(0, 5);
 
@@ -158,33 +141,29 @@ function Thoughts() {
       <p>{siteContent.thoughts.description}</p>
 
       {essays.length > 0 ? (
-        <div className="thought-group">
-          <h3>essays</h3>
-          <ol className="essay-list">
-            {essays.map((essay) => (
-              <li key={essay.href ?? essay.title}>
-                <div className="essay-row">
-                  {essay.href ? (
-                    <a href={essay.href} target="_blank" rel="noreferrer">
-                      {essay.title} <span aria-hidden="true">↗</span>
-                    </a>
-                  ) : (
-                    <span className="essay-placeholder">{essay.title}</span>
-                  )}
-                  {essay.date ? <time dateTime={essay.date}>{essay.date}</time> : null}
-                </div>
-                {essay.summary ? <p>{essay.summary}</p> : null}
-              </li>
-            ))}
-          </ol>
-        </div>
+        <ol className="essay-list">
+          {essays.map((essay) => (
+            <li key={essay.href ?? essay.title}>
+              <div className="essay-row">
+                {essay.href ? (
+                  <a href={essay.href} target="_blank" rel="noreferrer">
+                    {essay.title} <span aria-hidden="true">↗</span>
+                  </a>
+                ) : (
+                  <span className="essay-placeholder">{essay.title}</span>
+                )}
+                {essay.date ? <time dateTime={essay.date}>{essay.date}</time> : null}
+              </div>
+              {essay.summary ? <p>{essay.summary}</p> : null}
+            </li>
+          ))}
+        </ol>
       ) : siteContent.thoughts.href ? (
         <a className="text-link" href={siteContent.thoughts.href} target="_blank" rel="noreferrer">
           read my thoughts <span aria-hidden="true">↗</span>
         </a>
       ) : null}
 
-      <CategoryList items={siteContent.thoughts.categories} />
     </Section>
   );
 }
@@ -223,7 +202,6 @@ export default function App() {
 
           <Section id="work" title="work">
             <p>{siteContent.work.description}</p>
-            <CategoryList items={siteContent.work.categories} />
             {siteContent.work.href ? (
               <a className="text-link" href={siteContent.work.href} target="_blank" rel="noreferrer">
                 see my work <span aria-hidden="true">↗</span>
