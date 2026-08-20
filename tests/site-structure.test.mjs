@@ -3,74 +3,79 @@ import { access, readFile } from "node:fs/promises";
 import test from "node:test";
 
 const distRoot = new URL("../dist/", import.meta.url);
-const sourceRoot = new URL("../src/", import.meta.url);
 
-test("builds five direct-visit static pages with independent metadata", async () => {
-  const pages = [
-    ["index.html", /<title>jathin<\/title>/i],
-    ["now/index.html", /<title>now — jathin<\/title>/i],
-    ["work/index.html", /<title>work \+ research — jathin<\/title>/i],
-    ["thoughts/index.html", /<title>thoughts — jathin<\/title>/i],
-    ["photography/index.html", /<title>photography — jathin<\/title>/i],
-  ];
-
-  for (const [path, title] of pages) {
-    const html = await readFile(new URL(path, distRoot), "utf8");
-    assert.match(html, title);
-    assert.match(html, /name="description"/i);
-    assert.match(html, /name="theme-color" content="#050505"/i);
-    assert.match(html, /localStorage\.getItem\("jkorr-theme"\)/i);
-    assert.match(html, /id="root"/i);
-  }
+test("builds a minimal dark-first personal homepage", async () => {
+  const html = await readFile(new URL("index.html", distRoot), "utf8");
+  assert.match(html, /<title>jathin<\/title>/i);
+  assert.match(html, /The personal site of Jathin/i);
+  assert.match(html, /name="theme-color" content="#050505"/i);
+  assert.match(html, /name="color-scheme" content="dark light"/i);
+  assert.match(html, /localStorage\.getItem\("jkorr-theme"\)/i);
+  assert.match(html, /documentElement\.dataset\.theme/i);
+  assert.match(html, /id="root"/i);
 });
 
-test("exposes a real dropdown destination for every page", async () => {
-  const app = await readFile(new URL("App.tsx", sourceRoot), "utf8");
-  for (const href of ["/", "/now/", "/work/", "/thoughts/", "/photography/"]) {
-    assert.match(app, new RegExp(`href: "${href.replaceAll("/", "\\/")}"`));
-  }
-  assert.match(app, /aria-expanded=\{menuOpen\}/i);
-  assert.match(app, /aria-controls="site-menu"/i);
-  assert.match(app, /aria-current=\{currentPage === item\.id \? "page"/i);
-  assert.match(app, /event\.key === "Escape"/i);
-});
+test("renders real now, work, and thoughts destinations", async () => {
+  const content = await readFile(new URL("../src/content.ts", import.meta.url), "utf8");
+  const app = await readFile(new URL("../src/App.tsx", import.meta.url), "utf8");
 
-test("keeps now, research, essays, and photography editable and honest", async () => {
-  const content = await readFile(new URL("content.ts", sourceRoot), "utf8");
-  assert.match(content, /a dated snapshot of what has my attention/i);
-  assert.match(content, /august 2026/i);
-  assert.match(content, /infrastructure \+ performance problems @ openai/i);
-  assert.match(content, /scholar\.google\.com\/citations\?view_op=new_articles/i);
-  assert.match(content, /SELECTED RESEARCH — COMING SOON/i);
+  assert.match(content, /hero:\s*"hi, i’m jathin\."/i);
+  assert.match(content, /interface EssayPreview[\s\S]*title:[\s\S]*date\?:[\s\S]*summary\?:[\s\S]*href\?:/i);
+  assert.match(content, /now:\s*"i’m a recent berkeley eecs grad, raised in la/i);
+  assert.match(content, /raw, unfiltered thoughts on the world across travel, tech, fitness, & food/i);
+  assert.match(content, /right now, i’m exploring infra \+ performance problems @ openai/i);
+  assert.match(content, /a small index of things i’m exploring/i);
+  assert.match(content, /description:\s*"some of my more well articulated thoughts\."/i);
+  assert.match(content, /work:[\s\S]*https:\/\/github\.com\/jkorrr/i);
   assert.match(content, /PLACEHOLDER ESSAY 01/i);
   assert.match(content, /PLACEHOLDER ESSAY 05/i);
-  assert.match(content, /places, people, and details i wanted to remember/i);
-  assert.match(content, /photography:[\s\S]*items:\s*\[\]/i);
   assert.match(content, /https:\/\/www\.linkedin\.com\/in\/jathin-k/i);
   assert.match(content, /https:\/\/www\.instagram\.com\/jathin_korrapati/i);
+  assert.doesNotMatch(content, /welcome to my corner|a place for unfinished things|creations|curiosities/i);
+
+  assert.match(app, /href="#now"/i);
+  assert.match(app, /href="#work"/i);
+  assert.match(app, /href="#thoughts"/i);
+  assert.match(app, /learn more here/i);
+  assert.match(app, /id="now"/i);
+  assert.match(app, /id="work"/i);
+  assert.match(app, /id="thoughts"/i);
+  assert.match(app, /items\.slice\(0, 5\)/i);
+  assert.match(app, /essay\.href \?/i);
+  assert.match(app, /essay-placeholder/i);
+  assert.match(app, /<span>@jkorr<\/span>/i);
+  assert.doesNotMatch(app, /thoughts — coming soon/i);
+  assert.doesNotMatch(app, /IntroSplash|welcome to my corner/i);
 });
 
-test("preserves the theme, self-hosted type, spotlight, and reduced motion", async () => {
-  const app = await readFile(new URL("App.tsx", sourceRoot), "utf8");
-  const styles = await readFile(new URL("styles.css", sourceRoot), "utf8");
-  const main = await readFile(new URL("main.tsx", sourceRoot), "utf8");
+test("uses clean self-hosted typography, social icons, and a restrained spotlight", async () => {
+  const app = await readFile(new URL("../src/App.tsx", import.meta.url), "utf8");
+  const styles = await readFile(new URL("../src/styles.css", import.meta.url), "utf8");
+  const main = await readFile(new URL("../src/main.tsx", import.meta.url), "utf8");
 
   assert.match(main, /@fontsource-variable\/geist\/wght\.css/i);
+  assert.match(app, /FaGithub/i);
+  assert.match(app, /socialIcons\[link\.platform\]/i);
+  assert.match(app, /social-placeholder/i);
+  assert.match(app, /link coming soon/i);
   assert.match(app, /matchMedia\("\(pointer: fine\)"\)/i);
   assert.match(app, /matchMedia\("\(prefers-reduced-motion: reduce\)"\)/i);
   assert.match(app, /requestAnimationFrame\(paint\)/i);
+  assert.match(app, /useCursorSpotlight\(\)/i);
   assert.match(app, /localStorage\.setItem\(themeStorageKey/i);
   assert.match(styles, /--background:\s*#050505/i);
   assert.match(styles, /--font-sans:\s*"Geist Variable"/i);
+  assert.match(styles, /--font-serif:\s*Georgia/i);
   assert.match(styles, /:root\[data-theme="light"\]/i);
-  assert.match(styles, /html\[data-spotlight="true"\] body::before/i);
   assert.match(styles, /@media \(prefers-reduced-motion: reduce\)/i);
-  assert.match(styles, /\.home-index[\s\S]*justify-self:\s*end[\s\S]*text-align:\s*right/i);
-  assert.match(styles, /\.photo-grid/i);
+  assert.match(styles, /html\[data-spotlight="true"\] body::before/i);
+  assert.match(styles, /rgba\(77, 126, 171, 0\.22\)/i);
+  assert.match(styles, /rgba\(44, 103, 157, 0\.15\)/i);
+  assert.match(styles, /@media \(pointer: fine\) and \(prefers-reduced-motion: no-preference\)/i);
   assert.doesNotMatch(styles, /static-grid|hero-orb|floating-nav|pastel/i);
 });
 
-test("emits shared compiled assets and favicon", async () => {
+test("emits compiled script, styles, and favicon assets", async () => {
   const html = await readFile(new URL("index.html", distRoot), "utf8");
   const script = html.match(/<script[^>]+src="([^"]+\.js)"/i)?.[1];
   const stylesheet = html.match(/<link[^>]+href="([^"]+\.css)"/i)?.[1];
