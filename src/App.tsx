@@ -4,7 +4,7 @@ import { FaGithub, FaInstagram, FaLinkedinIn } from "react-icons/fa6";
 import { siteContent, type SocialPlatform } from "./content";
 
 type Theme = "dark" | "light";
-type PageId = "home" | "now" | "work" | "thoughts" | "places";
+type PageId = "home" | "now" | "work" | "thoughts" | "photography";
 
 const themeStorageKey = "jkorr-theme";
 const navigation: Array<{ id: PageId; label: string; href: string }> = [
@@ -12,7 +12,7 @@ const navigation: Array<{ id: PageId; label: string; href: string }> = [
   { id: "now", label: "now", href: "/now/" },
   { id: "work", label: "work + research", href: "/work/" },
   { id: "thoughts", label: "thoughts", href: "/thoughts/" },
-  { id: "places", label: "places", href: "/places/" },
+  { id: "photography", label: "photography", href: "/photography/" },
 ];
 
 const socialIcons = {
@@ -23,7 +23,7 @@ const socialIcons = {
 
 function getCurrentPage(): PageId {
   const section = window.location.pathname.split("/").filter(Boolean).at(-1);
-  return section === "now" || section === "work" || section === "thoughts" || section === "places"
+  return section === "now" || section === "work" || section === "thoughts" || section === "photography"
     ? section
     : "home";
 }
@@ -237,19 +237,28 @@ function ThoughtsPage() {
   );
 }
 
-function PlacesPage() {
+function PhotographyPage() {
   return (
     <main id="main-content" className="page-main">
-      <PageIntro title="places" intro={siteContent.places.description} />
-      <ol className="plain-list place-list">
-        {siteContent.places.items.map((item, index) => (
-          <li key={item.place}>
-            <span className="list-number">{String(index + 1).padStart(2, "0")}</span>
-            <div>{item.href ? <a href={item.href}>{item.place}</a> : <span>{item.place}</span>}<small>{item.note}</small></div>
-            {item.year ? <time>{item.year}</time> : null}
-          </li>
-        ))}
-      </ol>
+      <PageIntro title="photography" intro={siteContent.photography.description} />
+      {siteContent.photography.items.length ? (
+        <ul className="photo-grid">
+          {siteContent.photography.items.map((item) => (
+            <li key={item.src}>
+              <figure>
+                <img src={item.src} alt={item.alt} loading="lazy" />
+                <figcaption>
+                  <span>{item.title}</span>
+                  <small>{[item.location, item.year].filter(Boolean).join(" · ")}</small>
+                  {item.caption ? <p>{item.caption}</p> : null}
+                </figcaption>
+              </figure>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <div className="empty-archive"><span>archive in progress</span><p>photographs will live here.</p></div>
+      )}
     </main>
   );
 }
@@ -258,7 +267,7 @@ function Page({ id }: { id: PageId }) {
   if (id === "now") return <NowPage />;
   if (id === "work") return <WorkPage />;
   if (id === "thoughts") return <ThoughtsPage />;
-  if (id === "places") return <PlacesPage />;
+  if (id === "photography") return <PhotographyPage />;
   return <HomePage />;
 }
 

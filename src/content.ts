@@ -30,11 +30,13 @@ export interface ResearchPreview {
   href?: string;
 }
 
-export interface PlacePreview {
-  place: string;
+export interface PhotoPreview {
+  title: string;
+  src: string;
+  alt: string;
+  location?: string;
   year?: string;
-  note: string;
-  href?: string;
+  caption?: string;
 }
 
 export interface SiteContent {
@@ -61,9 +63,9 @@ export interface SiteContent {
     href?: string;
     items: EssayPreview[];
   };
-  places: {
+  photography: {
     description: string;
-    items: PlacePreview[];
+    items: PhotoPreview[];
   };
   socialLinks: SocialLink[];
 }
@@ -76,7 +78,7 @@ export const siteContent: SiteContent = {
       { label: "now", description: "what has my attention", href: "/now/" },
       { label: "work", description: "engineering + research", href: "/work/" },
       { label: "thoughts", description: "the better-articulated ones", href: "/thoughts/" },
-      { label: "places", description: "notes from elsewhere", href: "/places/" },
+      { label: "photography", description: "frames from elsewhere", href: "/photography/" },
     ],
   },
   now: {
@@ -106,13 +108,9 @@ export const siteContent: SiteContent = {
       { title: "PLACEHOLDER ESSAY 05" },
     ],
   },
-  places: {
-    description: "a quiet record of where i’ve been and what stayed with me.",
-    items: [
-      { place: "PLACEHOLDER PLACE 01", note: "a field note will live here." },
-      { place: "PLACEHOLDER PLACE 02", note: "a field note will live here." },
-      { place: "PLACEHOLDER PLACE 03", note: "a field note will live here." },
-    ],
+  photography: {
+    description: "places, people, and details i wanted to remember.",
+    items: [],
   },
   socialLinks: [
     {

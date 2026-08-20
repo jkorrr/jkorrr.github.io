@@ -11,7 +11,7 @@ test("builds five direct-visit static pages with independent metadata", async ()
     ["now/index.html", /<title>now — jathin<\/title>/i],
     ["work/index.html", /<title>work \+ research — jathin<\/title>/i],
     ["thoughts/index.html", /<title>thoughts — jathin<\/title>/i],
-    ["places/index.html", /<title>places — jathin<\/title>/i],
+    ["photography/index.html", /<title>photography — jathin<\/title>/i],
   ];
 
   for (const [path, title] of pages) {
@@ -26,7 +26,7 @@ test("builds five direct-visit static pages with independent metadata", async ()
 
 test("exposes a real dropdown destination for every page", async () => {
   const app = await readFile(new URL("App.tsx", sourceRoot), "utf8");
-  for (const href of ["/", "/now/", "/work/", "/thoughts/", "/places/"]) {
+  for (const href of ["/", "/now/", "/work/", "/thoughts/", "/photography/"]) {
     assert.match(app, new RegExp(`href: "${href.replaceAll("/", "\\/")}"`));
   }
   assert.match(app, /aria-expanded=\{menuOpen\}/i);
@@ -35,7 +35,7 @@ test("exposes a real dropdown destination for every page", async () => {
   assert.match(app, /event\.key === "Escape"/i);
 });
 
-test("keeps now, research, essays, and places editable and honest", async () => {
+test("keeps now, research, essays, and photography editable and honest", async () => {
   const content = await readFile(new URL("content.ts", sourceRoot), "utf8");
   assert.match(content, /a dated snapshot of what has my attention/i);
   assert.match(content, /august 2026/i);
@@ -44,8 +44,8 @@ test("keeps now, research, essays, and places editable and honest", async () => 
   assert.match(content, /SELECTED RESEARCH — COMING SOON/i);
   assert.match(content, /PLACEHOLDER ESSAY 01/i);
   assert.match(content, /PLACEHOLDER ESSAY 05/i);
-  assert.match(content, /PLACEHOLDER PLACE 01/i);
-  assert.match(content, /a field note will live here/i);
+  assert.match(content, /places, people, and details i wanted to remember/i);
+  assert.match(content, /photography:[\s\S]*items:\s*\[\]/i);
   assert.match(content, /https:\/\/www\.linkedin\.com\/in\/jathin-k/i);
   assert.match(content, /https:\/\/www\.instagram\.com\/jathin_korrapati/i);
 });
@@ -65,6 +65,8 @@ test("preserves the theme, self-hosted type, spotlight, and reduced motion", asy
   assert.match(styles, /:root\[data-theme="light"\]/i);
   assert.match(styles, /html\[data-spotlight="true"\] body::before/i);
   assert.match(styles, /@media \(prefers-reduced-motion: reduce\)/i);
+  assert.match(styles, /\.home-index[\s\S]*justify-self:\s*end[\s\S]*text-align:\s*right/i);
+  assert.match(styles, /\.photo-grid/i);
   assert.doesNotMatch(styles, /static-grid|hero-orb|floating-nav|pastel/i);
 });
 

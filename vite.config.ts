@@ -12,7 +12,7 @@ export default defineConfig({
         now: resolve(process.cwd(), "now/index.html"),
         work: resolve(process.cwd(), "work/index.html"),
         thoughts: resolve(process.cwd(), "thoughts/index.html"),
-        places: resolve(process.cwd(), "places/index.html"),
+        photography: resolve(process.cwd(), "photography/index.html"),
       },
     },
   },
