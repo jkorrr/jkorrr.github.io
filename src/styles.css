@@ -241,6 +241,41 @@ button {
   font-size: 0.85rem;
 }
 
+.category-list {
+  margin: 1.5rem 0 0;
+  padding: 0;
+  border-top: 1px solid var(--line);
+  list-style: none;
+}
+
+.category-list li {
+  display: grid;
+  grid-template-columns: 6.5rem minmax(0, 1fr);
+  gap: 1rem;
+  padding: 0.9rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.category-list a,
+.category-name {
+  font-size: 0.82rem;
+}
+
+.category-list p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.5;
+  letter-spacing: -0.005em;
+}
+
+.thought-group h3 {
+  margin: 1.6rem 0 0;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 400;
+}
+
 .essay-list {
   margin: 1.5rem 0 0;
   padding: 0;
@@ -318,6 +353,10 @@ button {
     grid-template-columns: 1fr;
     gap: 0.7rem;
     padding: 2rem 0 2.5rem;
+  }
+
+  .category-list li {
+    grid-template-columns: 5.5rem minmax(0, 1fr);
   }
 }
 

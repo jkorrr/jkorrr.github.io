@@ -13,17 +13,25 @@ export interface EssayPreview {
   href?: string;
 }
 
+export interface ContentCategory {
+  label: string;
+  description: string;
+  href?: string;
+}
+
 export interface SiteContent {
   hero: string;
   now: string;
   work: {
     description: string;
     href?: string;
+    categories: ContentCategory[];
   };
   thoughts: {
     description: string;
     href?: string;
     items: EssayPreview[];
+    categories: ContentCategory[];
   };
   socialLinks: SocialLink[];
 }
@@ -34,6 +42,16 @@ export const siteContent: SiteContent = {
   work: {
     description: "a small index of things i’m exploring.",
     href: "https://github.com/jkorrr",
+    categories: [
+      {
+        label: "projects",
+        description: "things i’ve built, shipped, or am still shaping.",
+      },
+      {
+        label: "lab",
+        description: "infra, performance, and technical experiments.",
+      },
+    ],
   },
   thoughts: {
     description: "some of my more well articulated thoughts.",
@@ -43,6 +61,20 @@ export const siteContent: SiteContent = {
       { title: "PLACEHOLDER ESSAY 03" },
       { title: "PLACEHOLDER ESSAY 04" },
       { title: "PLACEHOLDER ESSAY 05" },
+    ],
+    categories: [
+      {
+        label: "field notes",
+        description: "short observations from travel, food, fitness, and everyday life.",
+      },
+      {
+        label: "fragments",
+        description: "ideas that haven’t become essays yet.",
+      },
+      {
+        label: "shelf",
+        description: "books, tools, places, and things worth keeping around.",
+      },
     ],
   },
   socialLinks: [
