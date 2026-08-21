@@ -127,7 +127,7 @@ function Header({ currentPage, theme, onToggleTheme }: { currentPage: PageId; th
             <div className="life-menu" id="life-menu" aria-label="life pages">
               {lifePages.map((page) => (
                 <a key={page.href} href={page.href} aria-current={window.location.pathname === page.href ? "page" : undefined}>
-                  {page.label}<span aria-hidden="true">→</span>
+                  {page.label}
                 </a>
               ))}
             </div>

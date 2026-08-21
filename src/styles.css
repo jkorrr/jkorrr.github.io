@@ -187,6 +187,10 @@ button {
   position: relative;
 }
 
+.life-nav > button {
+  color: var(--text);
+}
+
 .life-nav > button span {
   display: inline-block;
   margin-left: 0.18rem;
@@ -196,35 +200,23 @@ button {
 .life-menu {
   display: grid;
   position: absolute;
-  top: calc(100% + 0.8rem);
+  top: calc(100% + 0.48rem);
   right: 0;
-  width: 9.5rem;
-  overflow: hidden;
-  border: 1px solid var(--line);
-  background: color-mix(in srgb, var(--background) 94%, transparent);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18);
-  backdrop-filter: blur(16px);
+  gap: 0.32rem;
+  justify-items: end;
+  min-width: max-content;
 }
 
 .life-menu a {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.78rem 0.85rem;
-  border-bottom: 1px solid var(--line);
-  color: var(--muted);
+  padding: 0.08rem 0;
+  color: var(--text);
   text-decoration: none;
-}
-
-.life-menu a:last-child {
-  border-bottom: 0;
 }
 
 .life-menu a:hover,
 .life-menu a[aria-current="page"] {
-  background: color-mix(in srgb, var(--text) 4%, transparent);
   color: var(--text);
-  text-decoration: none;
+  text-decoration: underline;
 }
 
 .hero {
