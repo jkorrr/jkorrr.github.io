@@ -4,7 +4,7 @@ import { FaGithub, FaInstagram, FaLinkedinIn } from "react-icons/fa6";
 import { siteContent, type LifePageContent, type SocialPlatform } from "./content";
 
 type Theme = "dark" | "light";
-type PageId = "home" | "work" | "fitness" | "eats" | "travel";
+type PageId = "home" | "work" | "thoughts" | "fitness" | "eats" | "travel";
 
 const themeStorageKey = "jkorr-theme";
 const lifePages = siteContent.life.map((page) => ({ label: page.title, href: `/${page.title}/` }));
@@ -17,7 +17,7 @@ const socialIcons = {
 
 function getCurrentPage(): PageId {
   const segment = window.location.pathname.split("/").filter(Boolean).at(-1);
-  return segment === "work" || segment === "fitness" || segment === "eats" || segment === "travel"
+  return segment === "work" || segment === "thoughts" || segment === "fitness" || segment === "eats" || segment === "travel"
     ? segment
     : "home";
 }
@@ -112,7 +112,7 @@ function Header({ currentPage, theme, onToggleTheme }: { currentPage: PageId; th
       <nav className="site-nav" aria-label="primary navigation">
         <a href="/#now">now</a>
         <a href="/work/" aria-current={currentPage === "work" ? "page" : undefined}>work</a>
-        <a href="/#thoughts">thoughts</a>
+        <a href="/thoughts/" aria-current={currentPage === "thoughts" ? "page" : undefined}>thoughts</a>
         <div className="life-nav" ref={lifeRef}>
           <button
             type="button"
@@ -170,15 +170,28 @@ function Thoughts() {
             <li key={essay.href ?? essay.title}>
               <div className="essay-row">
                 {essay.href ? <a href={essay.href} target="_blank" rel="noreferrer">{essay.title} ↗</a> : <span className="essay-placeholder">{essay.title}</span>}
-                {essay.date ? <time dateTime={essay.date}>{essay.date}</time> : null}
+                <span className="essay-meta">
+                  {essay.date ? <time dateTime={essay.date}>{formatEssayDate(essay.date)}</time> : null}
+                  {essay.readTime ? <span>{essay.readTime}</span> : null}
+                </span>
               </div>
               {essay.summary ? <p>{essay.summary}</p> : null}
             </li>
           ))}
         </ol>
       ) : null}
+      <a className="text-link" href="/thoughts/">all thoughts <span aria-hidden="true">→</span></a>
     </Section>
   );
+}
+
+function formatEssayDate(date: string) {
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(new Date(`${date}T00:00:00Z`)).toLowerCase();
 }
 
 function HomePage() {
@@ -190,7 +203,7 @@ function HomePage() {
       </motion.section>
       <Section id="now" title="now">
         <p>{siteContent.now}</p>
-        <a className="text-link" href="#thoughts">learn more here <span aria-hidden="true">↓</span></a>
+        <a className="text-link" href="/thoughts/">learn more here <span aria-hidden="true">→</span></a>
       </Section>
       <Section id="work" title="work">
         <p>{siteContent.work.description}</p>
@@ -201,12 +214,12 @@ function HomePage() {
   );
 }
 
-function DocumentIntro({ section, title, description }: { section: string; title: string; description: string }) {
+function DocumentIntro({ section, title, description }: { section: string; title: string; description?: string }) {
   return (
     <header className="document-intro">
       <p>@jkorr / {section}</p>
       <h1>{title}</h1>
-      <div>{description}</div>
+      {description ? <div>{description}</div> : null}
     </header>
   );
 }
@@ -224,6 +237,43 @@ function WorkPage() {
           </section>
         ))}
       </div>
+    </main>
+  );
+}
+
+function ThoughtsPage() {
+  return (
+    <main id="main-content" className="document-page thoughts-page">
+      <DocumentIntro section="thoughts" title="thoughts" />
+      <div className="thoughts-source">
+        <span>published essays</span>
+        {siteContent.thoughts.href ? (
+          <a href={siteContent.thoughts.href} target="_blank" rel="noreferrer">substack archive ↗</a>
+        ) : null}
+      </div>
+      <ol className="thoughts-index">
+        {siteContent.thoughts.items.map((essay) => (
+          <li key={essay.href ?? essay.title}>
+            {essay.href ? (
+              <a href={essay.href} target="_blank" rel="noreferrer">
+                <div className="thought-date">
+                  {essay.date ? <time dateTime={essay.date}>{formatEssayDate(essay.date)}</time> : null}
+                </div>
+                <div className="thought-copy">
+                  <h2>{essay.title}</h2>
+                  {essay.summary ? <p>{essay.summary}</p> : null}
+                </div>
+                <div className="thought-read">
+                  {essay.readTime ? <span>{essay.readTime}</span> : null}
+                  <span aria-hidden="true">↗</span>
+                </div>
+              </a>
+            ) : (
+              <div className="thought-placeholder"><span>{essay.title}</span></div>
+            )}
+          </li>
+        ))}
+      </ol>
     </main>
   );
 }
@@ -249,6 +299,7 @@ function LifePage({ page }: { page: LifePageContent }) {
 
 function Page({ id }: { id: PageId }) {
   if (id === "work") return <WorkPage />;
+  if (id === "thoughts") return <ThoughtsPage />;
   if (id === "fitness" || id === "eats" || id === "travel") {
     const page = siteContent.life.find((entry) => entry.title === id)!;
     return <LifePage page={page} />;

@@ -10,6 +10,7 @@ export interface EssayPreview {
   title: string;
   date?: string;
   summary?: string;
+  readTime?: string;
   href?: string;
 }
 
@@ -71,13 +72,16 @@ export const siteContent: SiteContent = {
     ],
   },
   thoughts: {
-    description: "some of my more well articulated thoughts.",
+    description: "some of my more well articulated thoughts:",
+    href: "https://substack.com/@jkorr",
     items: [
-      { title: "PLACEHOLDER ESSAY 01" },
-      { title: "PLACEHOLDER ESSAY 02" },
-      { title: "PLACEHOLDER ESSAY 03" },
-      { title: "PLACEHOLDER ESSAY 04" },
-      { title: "PLACEHOLDER ESSAY 05" },
+      {
+        title: "do hard shit.",
+        date: "2026-08-20",
+        summary: "the joy in pain",
+        readTime: "3 min read",
+        href: "https://jkorr.substack.com/p/do-hard-shit",
+      },
     ],
   },
   life: [

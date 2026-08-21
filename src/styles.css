@@ -408,13 +408,111 @@ button {
 }
 
 .essay-list time,
+.essay-meta span,
 .essay-list p {
   color: var(--muted);
   font-size: 0.78rem;
 }
 
+.essay-meta {
+  display: flex;
+  gap: 0.45rem;
+  align-items: baseline;
+  white-space: nowrap;
+}
+
+.essay-meta span::before {
+  margin-right: 0.45rem;
+  content: "·";
+}
+
 .essay-list p {
   margin-top: 0.4rem;
+}
+
+.thoughts-source {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 0 0 0.85rem;
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.thoughts-source a {
+  color: var(--text);
+}
+
+.thoughts-index {
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--line);
+  list-style: none;
+}
+
+.thoughts-index li {
+  border-bottom: 1px solid var(--line);
+}
+
+.thoughts-index li > a {
+  display: grid;
+  grid-template-columns: 7.5rem minmax(0, 1fr) auto;
+  gap: 1.5rem;
+  align-items: baseline;
+  padding: 1.55rem 0 1.65rem;
+  color: inherit;
+  text-decoration: none;
+}
+
+.thought-date,
+.thought-read {
+  color: var(--muted);
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+.thought-copy h2,
+.thought-copy p {
+  margin: 0;
+}
+
+.thought-copy h2 {
+  font-size: 1.05rem;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+}
+
+.thought-copy p {
+  margin-top: 0.22rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.thought-read {
+  display: flex;
+  gap: 0.55rem;
+  align-items: baseline;
+}
+
+.thought-read span:last-child {
+  display: inline-block;
+  color: var(--text);
+  transition: transform 160ms ease;
+}
+
+.thoughts-index li > a:hover .thought-copy h2 {
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}
+
+.thoughts-index li > a:hover .thought-read span:last-child {
+  transform: translate(2px, -2px);
+}
+
+.thought-placeholder {
+  padding: 1.5rem 0;
+  color: var(--muted);
 }
 
 .site-footer {
@@ -487,5 +585,14 @@ button {
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
+  }
+
+  .thoughts-index li > a {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.65rem 1rem;
+  }
+
+  .thought-date {
+    grid-column: 1 / -1;
   }
 }

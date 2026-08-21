@@ -9,6 +9,7 @@ export default defineConfig({
       input: {
         home: "index.html",
         work: "work/index.html",
+        thoughts: "thoughts/index.html",
         fitness: "fitness/index.html",
         eats: "eats/index.html",
         travel: "travel/index.html",
