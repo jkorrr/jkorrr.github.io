@@ -5,7 +5,7 @@ import test from "node:test";
 const distRoot = new URL("../dist/", import.meta.url);
 const sourceRoot = new URL("../src/", import.meta.url);
 
-test("builds the homepage and five direct-visit documentation pages", async () => {
+test("builds the homepage, documentation pages, and seven travel journals", async () => {
   const pages = [
     ["index.html", /<title>jathin<\/title>/i],
     ["work/index.html", /<title>work — jathin<\/title>/i],
@@ -13,6 +13,13 @@ test("builds the homepage and five direct-visit documentation pages", async () =
     ["fitness/index.html", /<title>fitness — jathin<\/title>/i],
     ["eats/index.html", /<title>eats — jathin<\/title>/i],
     ["travel/index.html", /<title>travel — jathin<\/title>/i],
+    ["travel/belgium/index.html", /<title>belgium — travel — jathin<\/title>/i],
+    ["travel/london/index.html", /<title>london — travel — jathin<\/title>/i],
+    ["travel/amsterdam/index.html", /<title>amsterdam — travel — jathin<\/title>/i],
+    ["travel/guatemala/index.html", /<title>guatemala — travel — jathin<\/title>/i],
+    ["travel/mexico-city/index.html", /<title>cdmx — travel — jathin<\/title>/i],
+    ["travel/hyderabad/index.html", /<title>hyderabad — travel — jathin<\/title>/i],
+    ["travel/kashmir/index.html", /<title>kashmir — travel — jathin<\/title>/i],
   ];
 
   for (const [path, title] of pages) {
@@ -40,6 +47,11 @@ test("keeps the horizontal homepage and adds an accessible life dropdown", async
   assert.doesNotMatch(homePage, /siteContent\.work\.areas\.map/i);
   assert.match(app, /function WorkPage\(\)[\s\S]*siteContent\.work\.areas\.map/i);
   assert.match(app, /function ThoughtsPage\(\)[\s\S]*siteContent\.thoughts\.items\.map/i);
+  assert.match(app, /function EatsPage\(\)[\s\S]*<EatsArchive/i);
+  assert.match(app, /function TravelPage\(\)[\s\S]*<TravelMap places=\{siteContent\.travel\.places\}/i);
+  assert.doesNotMatch(app, /className="travel-journeys"/i);
+  assert.match(app, /function TravelDetailPage\([^)]*\)[\s\S]*what stayed with me/i);
+  assert.match(app, /currentPage === "travel-detail"/i);
 });
 
 test("stores honest Work, Thoughts, and Life content", async () => {
@@ -55,7 +67,15 @@ test("stores honest Work, Thoughts, and Life content", async () => {
   assert.match(content, /https:\/\/substack\.com\/@jkorr/i);
   assert.match(content, /title:\s*"fitness"[\s\S]*items:\s*\[\]/i);
   assert.match(content, /title:\s*"eats"[\s\S]*items:\s*\[\]/i);
+  assert.match(content, /title:\s*"eats"[\s\S]*https:\/\/beliapp\.co\/app\/jkorr/i);
+  assert.match(content, /a life worth living to eat in/i);
+  assert.match(content, /beli-icon\.webp[\s\S]*@jkorr on beli[\s\S]*my restaurant map/i);
+  assert.match(content, /restaurants i’ve tried, ranked and saved/i);
   assert.match(content, /title:\s*"travel"[\s\S]*items:\s*\[\]/i);
+  assert.match(content, /travel:[\s\S]*places i’ve been, and places i’m still thinking about/i);
+  assert.match(content, /slug:\s*"belgium"[\s\S]*slug:\s*"london"[\s\S]*slug:\s*"amsterdam"/i);
+  assert.match(content, /slug:\s*"guatemala"[\s\S]*antigua[\s\S]*acatenango[\s\S]*lake atitlán/i);
+  assert.match(content, /slug:\s*"mexico-city"[\s\S]*slug:\s*"hyderabad"[\s\S]*slug:\s*"kashmir"/i);
   assert.match(content, /https:\/\/www\.linkedin\.com\/in\/jathin-k/i);
   assert.match(content, /https:\/\/www\.instagram\.com\/jathin_korrapati/i);
 });
@@ -64,6 +84,10 @@ test("preserves typography, themes, spotlight, and responsive navigation", async
   const app = await readFile(new URL("App.tsx", sourceRoot), "utf8");
   const styles = await readFile(new URL("styles.css", sourceRoot), "utf8");
   const main = await readFile(new URL("main.tsx", sourceRoot), "utf8");
+  const travelMap = await readFile(new URL("TravelMap.tsx", sourceRoot), "utf8");
+  const eatsArchive = await readFile(new URL("EatsArchive.tsx", sourceRoot), "utf8");
+  const eatsData = await readFile(new URL("eatsData.ts", sourceRoot), "utf8");
+  const mapGeometry = await readFile(new URL("mapGeometry.ts", sourceRoot), "utf8");
 
   assert.match(main, /@fontsource-variable\/geist\/wght\.css/i);
   assert.match(app, /FaGithub/i);
@@ -76,6 +100,25 @@ test("preserves typography, themes, spotlight, and responsive navigation", async
   assert.match(styles, /--font-serif:\s*Georgia/i);
   assert.match(styles, /\.life-menu/i);
   assert.match(styles, /\.document-page/i);
+  assert.match(styles, /\.life-destination/i);
+  assert.match(styles, /\.taste-archive/i);
+  assert.match(styles, /\.travel-map-marker/i);
+  assert.match(styles, /\.travel-journal-outline/i);
+  assert.doesNotMatch(app, /className="hero-portrait"/i);
+  assert.match(travelMap, /fetch\("\/world-land\.geojson"\)/i);
+  assert.match(travelMap, /aria-labelledby="travel-map-title travel-map-description"/i);
+  assert.doesNotMatch(travelMap, /field atlas/i);
+  assert.match(mapGeometry, /function layoutGeoMarkers/i);
+  assert.match(travelMap, /className="travel-map-readout/i);
+  assert.match(travelMap, /what i've seen, so far\./i);
+  assert.match(travelMap, /hover to preview; select to explore the adventure/i);
+  assert.match(eatsArchive, /where i've eaten, so far\./i);
+  assert.match(eatsArchive, /full rankings on beli/i);
+  assert.match(eatsArchive, /select a city to open its local index/i);
+  assert.match(eatsArchive, /choose a neighborhood to narrow/i);
+  assert.match(eatsArchive, /fetch\("\/world-land\.geojson"\)/i);
+  assert.match(eatsData, /isPlaceholder:\s*true/i);
+  assert.match(eatsData, /totalRestaurants:\s*500/i);
   assert.match(styles, /@media \(prefers-reduced-motion: reduce\)/i);
   assert.match(styles, /html\[data-spotlight="true"\] body::before/i);
   assert.doesNotMatch(styles, /static-grid|hero-orb|floating-nav|pastel/i);
@@ -90,4 +133,6 @@ test("emits shared compiled assets and favicon", async () => {
   await access(new URL(script.replace(/^\//, ""), distRoot));
   await access(new URL(stylesheet.replace(/^\//, ""), distRoot));
   await access(new URL("favicon.svg", distRoot));
+  await access(new URL("beli-icon.webp", distRoot));
+  await access(new URL("world-land.geojson", distRoot));
 });

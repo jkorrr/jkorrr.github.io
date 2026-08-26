@@ -28,10 +28,31 @@ export interface DocumentationEntry {
   href?: string;
 }
 
+export type TravelStatus = "visited" | "wishlist";
+
+export interface TravelPlace {
+  slug: string;
+  name: string;
+  location: string;
+  status: TravelStatus;
+  coordinates: {
+    longitude: number;
+    latitude: number;
+  };
+  route?: string[];
+}
+
 export interface LifePageContent {
   title: "fitness" | "eats" | "travel";
   description: string;
   emptyLabel: string;
+  destination?: {
+    iconSrc?: string;
+    label: string;
+    title: string;
+    summary: string;
+    href: string;
+  };
   items: DocumentationEntry[];
 }
 
@@ -46,6 +67,10 @@ export interface SiteContent {
     description: string;
     href?: string;
     items: EssayPreview[];
+  };
+  travel: {
+    description: string;
+    places: TravelPlace[];
   };
   life: LifePageContent[];
   socialLinks: SocialLink[];
@@ -84,6 +109,61 @@ export const siteContent: SiteContent = {
       },
     ],
   },
+  travel: {
+    description: "places i’ve been, and places i’m still thinking about.",
+    places: [
+      {
+        slug: "belgium",
+        name: "belgium",
+        location: "belgium",
+        status: "visited",
+        coordinates: { longitude: 4.67, latitude: 50.64 },
+      },
+      {
+        slug: "london",
+        name: "london",
+        location: "united kingdom",
+        status: "visited",
+        coordinates: { longitude: -0.13, latitude: 51.51 },
+      },
+      {
+        slug: "amsterdam",
+        name: "amsterdam",
+        location: "the netherlands",
+        status: "visited",
+        coordinates: { longitude: 4.9, latitude: 52.37 },
+      },
+      {
+        slug: "guatemala",
+        name: "guatemala",
+        location: "guatemala",
+        status: "visited",
+        coordinates: { longitude: -90.95, latitude: 14.65 },
+        route: ["antigua", "acatenango", "lake atitlán"],
+      },
+      {
+        slug: "mexico-city",
+        name: "cdmx",
+        location: "mexico",
+        status: "visited",
+        coordinates: { longitude: -99.13, latitude: 19.43 },
+      },
+      {
+        slug: "hyderabad",
+        name: "hyderabad",
+        location: "india",
+        status: "visited",
+        coordinates: { longitude: 78.49, latitude: 17.39 },
+      },
+      {
+        slug: "kashmir",
+        name: "kashmir",
+        location: "india",
+        status: "visited",
+        coordinates: { longitude: 74.8, latitude: 34.08 },
+      },
+    ],
+  },
   life: [
     {
       title: "fitness",
@@ -93,13 +173,20 @@ export const siteContent: SiteContent = {
     },
     {
       title: "eats",
-      description: "meals, restaurants, and food worth remembering.",
+      description: "a life worth living to eat in",
       emptyLabel: "food notes will live here.",
+      destination: {
+        iconSrc: "/beli-icon.webp",
+        label: "@jkorr on beli",
+        title: "my restaurant map",
+        summary: "restaurants i’ve tried, ranked and saved.",
+        href: "https://beliapp.co/app/jkorr",
+      },
       items: [],
     },
     {
       title: "travel",
-      description: "field notes, observations, and useful details from elsewhere.",
+      description: "places i’ve been, and places i’m still thinking about.",
       emptyLabel: "travel notes will live here.",
       items: [],
     },

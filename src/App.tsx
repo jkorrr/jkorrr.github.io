@@ -1,10 +1,12 @@
 import { motion, useReducedMotion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { FaGithub, FaInstagram, FaLinkedinIn } from "react-icons/fa6";
-import { siteContent, type LifePageContent, type SocialPlatform } from "./content";
+import { siteContent, type LifePageContent, type SocialPlatform, type TravelPlace } from "./content";
+import { EatsArchive } from "./EatsArchive";
+import { TravelMap } from "./TravelMap";
 
 type Theme = "dark" | "light";
-type PageId = "home" | "work" | "thoughts" | "fitness" | "eats" | "travel";
+type PageId = "home" | "work" | "thoughts" | "fitness" | "eats" | "travel" | "travel-detail";
 
 const themeStorageKey = "jkorr-theme";
 const lifePages = siteContent.life.map((page) => ({ label: page.title, href: `/${page.title}/` }));
@@ -15,7 +17,15 @@ const socialIcons = {
   instagram: FaInstagram,
 } satisfies Record<SocialPlatform, typeof FaGithub>;
 
+function getTravelSlug() {
+  const segments = window.location.pathname.split("/").filter(Boolean);
+  if (segments.at(-2) !== "travel") return undefined;
+  const slug = segments.at(-1);
+  return siteContent.travel.places.some((place) => place.slug === slug) ? slug : undefined;
+}
+
 function getCurrentPage(): PageId {
+  if (getTravelSlug()) return "travel-detail";
   const segment = window.location.pathname.split("/").filter(Boolean).at(-1);
   return segment === "work" || segment === "thoughts" || segment === "fitness" || segment === "eats" || segment === "travel"
     ? segment
@@ -77,7 +87,7 @@ function useTheme() {
 function Header({ currentPage, theme, onToggleTheme }: { currentPage: PageId; theme: Theme; onToggleTheme: () => void }) {
   const [lifeOpen, setLifeOpen] = useState(false);
   const lifeRef = useRef<HTMLDivElement>(null);
-  const lifeActive = currentPage === "fitness" || currentPage === "eats" || currentPage === "travel";
+  const lifeActive = currentPage === "fitness" || currentPage === "eats" || currentPage === "travel" || currentPage === "travel-detail";
 
   useEffect(() => {
     if (!lifeOpen) return;
@@ -126,7 +136,11 @@ function Header({ currentPage, theme, onToggleTheme }: { currentPage: PageId; th
           {lifeOpen ? (
             <div className="life-menu" id="life-menu" aria-label="life pages">
               {lifePages.map((page) => (
-                <a key={page.href} href={page.href} aria-current={window.location.pathname === page.href ? "page" : undefined}>
+                <a
+                  key={page.href}
+                  href={page.href}
+                  aria-current={window.location.pathname === page.href || (currentPage === "travel-detail" && page.label === "travel") ? "page" : undefined}
+                >
                   {page.label}
                 </a>
               ))}
@@ -282,6 +296,19 @@ function LifePage({ page }: { page: LifePageContent }) {
   return (
     <main id="main-content" className="document-page">
       <DocumentIntro section="life" title={page.title} description={page.description} />
+      {page.destination ? (
+        <a className="life-destination" href={page.destination.href} target="_blank" rel="noreferrer">
+          {page.destination.iconSrc ? (
+            <img className="life-destination-icon" src={page.destination.iconSrc} alt="" width="400" height="400" />
+          ) : null}
+          <div className="life-destination-copy">
+            <span className="life-destination-label">{page.destination.label}</span>
+            <h2>{page.destination.title}</h2>
+            <p>{page.destination.summary}</p>
+          </div>
+          <span className="life-destination-arrow" aria-hidden="true">↗</span>
+        </a>
+      ) : null}
       {page.items.length ? (
         <ol className="document-list">
           {page.items.map((item) => (
@@ -292,7 +319,74 @@ function LifePage({ page }: { page: LifePageContent }) {
             </li>
           ))}
         </ol>
-      ) : <div className="empty-document"><span>documentation in progress</span><p>{page.emptyLabel}</p></div>}
+      ) : page.destination ? null : <div className="empty-document"><span>documentation in progress</span><p>{page.emptyLabel}</p></div>}
+    </main>
+  );
+}
+
+function TravelPage() {
+  return (
+    <main id="main-content" className="document-page travel-page">
+      <DocumentIntro section="life" title="travel" description={siteContent.travel.description} />
+      <TravelMap places={siteContent.travel.places} />
+    </main>
+  );
+}
+
+function EatsPage() {
+  return (
+    <main id="main-content" className="document-page eats-page">
+      <DocumentIntro section="life" title="eats" description="a life worth living to eat in" />
+      <EatsArchive />
+    </main>
+  );
+}
+
+function TravelDetailPage({ place }: { place: TravelPlace }) {
+  const currentIndex = siteContent.travel.places.findIndex((entry) => entry.slug === place.slug);
+  const previous = currentIndex > 0 ? siteContent.travel.places[currentIndex - 1] : null;
+  const next = currentIndex < siteContent.travel.places.length - 1 ? siteContent.travel.places[currentIndex + 1] : null;
+
+  return (
+    <main id="main-content" className="document-page travel-detail-page">
+      <DocumentIntro
+        section="travel"
+        title={place.name}
+        description={`${place.location}. notes, photographs, and the story of this trip will live here.`}
+      />
+      <div className="travel-detail-meta">
+        <span>{place.status === "visited" ? "visited" : "want to go"}</span>
+        <a href="/travel/">back to the atlas →</a>
+      </div>
+      <div className="travel-journal-outline">
+        <section aria-labelledby="route-title">
+          <span>01</span>
+          <div>
+            <h2 id="route-title">the route</h2>
+            {place.route ? (
+              <ol className="travel-route">
+                {place.route.map((stop) => <li key={stop}>{stop}</li>)}
+              </ol>
+            ) : <p>stops and dates will live here.</p>}
+          </div>
+        </section>
+        <section aria-labelledby="did-title">
+          <span>02</span>
+          <div><h2 id="did-title">what i did</h2><p>field notes coming soon.</p></div>
+        </section>
+        <section aria-labelledby="stayed-title">
+          <span>03</span>
+          <div><h2 id="stayed-title">what stayed with me</h2><p>the longer version is still being written.</p></div>
+        </section>
+        <section aria-labelledby="photos-title">
+          <span>04</span>
+          <div><h2 id="photos-title">photographs</h2><p>photos from this trip will collect here.</p></div>
+        </section>
+      </div>
+      <nav className="travel-detail-nav" aria-label="travel adventure navigation">
+        {previous ? <a href={`/travel/${previous.slug}/`}>← {previous.name}</a> : <span />}
+        {next ? <a href={`/travel/${next.slug}/`}>{next.name} →</a> : <span />}
+      </nav>
     </main>
   );
 }
@@ -300,7 +394,13 @@ function LifePage({ page }: { page: LifePageContent }) {
 function Page({ id }: { id: PageId }) {
   if (id === "work") return <WorkPage />;
   if (id === "thoughts") return <ThoughtsPage />;
-  if (id === "fitness" || id === "eats" || id === "travel") {
+  if (id === "eats") return <EatsPage />;
+  if (id === "travel") return <TravelPage />;
+  if (id === "travel-detail") {
+    const place = siteContent.travel.places.find((entry) => entry.slug === getTravelSlug())!;
+    return <TravelDetailPage place={place} />;
+  }
+  if (id === "fitness") {
     const page = siteContent.life.find((entry) => entry.title === id)!;
     return <LifePage page={page} />;
   }
