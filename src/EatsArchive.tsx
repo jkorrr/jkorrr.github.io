@@ -1,17 +1,43 @@
 import { useEffect, useMemo, useState } from "react";
-import { eatsPrototype } from "./eatsData";
+import { eatsData, type TasteCategory } from "./eatsData";
 import { createWorldPath, layoutGeoMarkers, mapHeight, mapWidth, type LandCollection } from "./mapGeometry";
 
+const pageSize = 12;
+
+function formatExportDate(value: string) {
+  if (!value) return "recent export";
+  return new Intl.DateTimeFormat("en", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(new Date(`${value}T00:00:00Z`));
+}
+
 export function EatsArchive() {
+  const firstRegion = eatsData.regions[0];
   const [worldPath, setWorldPath] = useState("");
-  const [activeSlug, setActiveSlug] = useState(eatsPrototype.cities[0].slug);
-  const [activeNeighborhood, setActiveNeighborhood] = useState(eatsPrototype.cities[0].neighborhoods[0].name);
-  const markers = useMemo(() => layoutGeoMarkers(eatsPrototype.cities, 78, 62), []);
-  const activeCity = eatsPrototype.cities.find(({ slug }) => slug === activeSlug) ?? eatsPrototype.cities[0];
-  const activeCityIndex = eatsPrototype.cities.findIndex(({ slug }) => slug === activeCity.slug);
-  const neighborhood = activeCity.neighborhoods.find(({ name }) => name === activeNeighborhood)
-    ?? activeCity.neighborhoods[0];
-  const largestCity = Math.max(...eatsPrototype.cities.map(({ restaurantCount }) => restaurantCount));
+  const [activeSlug, setActiveSlug] = useState(firstRegion.slug);
+  const [activeCity, setActiveCity] = useState("all");
+  const [activeCategory, setActiveCategory] = useState<"all" | TasteCategory>("all");
+  const [query, setQuery] = useState("");
+  const [visibleCount, setVisibleCount] = useState(pageSize);
+  const markers = useMemo(() => layoutGeoMarkers(eatsData.regions, 32, 38), []);
+  const activeRegion = eatsData.regions.find(({ slug }) => slug === activeSlug) ?? firstRegion;
+  const activeRegionIndex = eatsData.regions.findIndex(({ slug }) => slug === activeRegion.slug);
+  const largestRegion = Math.max(...eatsData.regions.map(({ placeCount }) => placeCount));
+
+  const filteredPlaces = useMemo(() => {
+    const normalizedQuery = query.trim().toLocaleLowerCase();
+    return activeRegion.places.filter((place) => {
+      const matchesCity = activeCity === "all" || place.city === activeCity;
+      const matchesCategory = activeCategory === "all" || place.category === activeCategory;
+      const matchesQuery = !normalizedQuery
+        || place.name.toLocaleLowerCase().includes(normalizedQuery)
+        || place.city.toLocaleLowerCase().includes(normalizedQuery);
+      return matchesCity && matchesCategory && matchesQuery;
+    });
+  }, [activeCategory, activeCity, activeRegion, query]);
 
   useEffect(() => {
     let active = true;
@@ -32,17 +58,26 @@ export function EatsArchive() {
     };
   }, []);
 
-  const selectCity = (slug: string) => {
-    const city = eatsPrototype.cities.find((entry) => entry.slug === slug)!;
+  useEffect(() => {
+    setVisibleCount(pageSize);
+  }, [activeCategory, activeCity, activeSlug, query]);
+
+  const selectRegion = (slug: string) => {
     setActiveSlug(slug);
-    setActiveNeighborhood(city.neighborhoods[0].name);
+    setActiveCity("all");
+    setActiveCategory("all");
+    setQuery("");
   };
+
+  const activeCityCount = activeCity === "all"
+    ? activeRegion.placeCount
+    : activeRegion.cities.find(({ name }) => name === activeCity)?.placeCount ?? 0;
 
   return (
     <section className="taste-archive" aria-labelledby="taste-archive-title">
       <div className="taste-archive-meta">
         <div>
-          <span>prototype / sample data</span>
+          <span>beli export · updated {formatExportDate(eatsData.updatedAt)}</span>
           <h2 id="taste-archive-title">where i've eaten, so far.</h2>
         </div>
         <a href="https://beliapp.co/app/jkorr" target="_blank" rel="noreferrer">
@@ -50,10 +85,16 @@ export function EatsArchive() {
         </a>
       </div>
 
+      <div className="taste-archive-stats" aria-label="Beli export summary">
+        <span><strong>{eatsData.totalPlaces}</strong> ranked</span>
+        <span><strong>{eatsData.uniqueCities}</strong> cities</span>
+        <span><strong>{eatsData.totalSaved}</strong> saved</span>
+      </div>
+
       <div className="eats-atlas-map-shell">
         <div className="eats-atlas-map-meta">
           <span>world view</span>
-          <span>select a city to open its local index <span aria-hidden="true">↓</span></span>
+          <span>select a region to open its local index <span aria-hidden="true">↓</span></span>
         </div>
         <div className="eats-atlas-map-stage">
           <svg
@@ -62,8 +103,8 @@ export function EatsArchive() {
             role="img"
             aria-labelledby="eats-map-title eats-map-description"
           >
-            <title id="eats-map-title">Sample city-level restaurant atlas</title>
-            <desc id="eats-map-description">Restaurants are aggregated into city markers. Nearby cities fan apart from their geographic position.</desc>
+            <title id="eats-map-title">Regional map of Jathin's ranked places</title>
+            <desc id="eats-map-description">Ranked places from the Beli export are aggregated into regional markers.</desc>
             {worldPath ? <path className="eats-atlas-land" d={worldPath} /> : null}
             {markers.filter(({ isDisplaced }) => isDisplaced).map(({ item, anchor, point }) => (
               <g key={`${item.slug}-tether`} aria-hidden="true">
@@ -72,72 +113,134 @@ export function EatsArchive() {
               </g>
             ))}
           </svg>
-          {markers.map(({ item: city, point }) => {
-            const markerSize = 1.45 + (city.restaurantCount / largestCity) * 1.25;
+          {markers.map(({ item: region, point }) => {
+            const markerSize = 1.25 + Math.sqrt(region.placeCount / largestRegion) * 1.55;
             return (
               <button
-                className={`eats-city-marker${activeCity.slug === city.slug ? " is-active" : ""}`}
-                key={city.slug}
+                className={`eats-city-marker${activeRegion.slug === region.slug ? " is-active" : ""}`}
+                key={region.slug}
                 type="button"
                 style={{
                   "--marker-x": `${(point.x / mapWidth) * 100}%`,
                   "--marker-y": `${(point.y / mapHeight) * 100}%`,
                   "--marker-size": `${markerSize}rem`,
                 } as React.CSSProperties}
-                aria-pressed={activeCity.slug === city.slug}
-                aria-label={`${city.name}, ${city.restaurantCount} sample restaurants`}
-                onClick={() => selectCity(city.slug)}
-                onFocus={() => selectCity(city.slug)}
-                onMouseEnter={() => selectCity(city.slug)}
+                aria-pressed={activeRegion.slug === region.slug}
+                aria-label={`${region.name}, ${region.placeCount} ranked places`}
+                onClick={() => selectRegion(region.slug)}
+                onFocus={() => selectRegion(region.slug)}
+                onMouseEnter={() => selectRegion(region.slug)}
               >
-                <span>{city.restaurantCount}</span>
-                <small>{city.name}</small>
+                <span>{region.placeCount}</span>
+                <small>{region.name}</small>
               </button>
             );
           })}
         </div>
         <div className="eats-atlas-map-readout" aria-live="polite">
-          <span>{String(activeCityIndex + 1).padStart(2, "0")} / {String(eatsPrototype.cities.length).padStart(2, "0")}</span>
-          <strong>{activeCity.name}</strong>
-          <small>{activeCity.restaurantCount} sample restaurants</small>
+          <span>{String(activeRegionIndex + 1).padStart(2, "0")} / {String(eatsData.regions.length).padStart(2, "0")}</span>
+          <strong>{activeRegion.name}</strong>
+          <small>{activeRegion.placeCount} ranked · {activeRegion.savedCount} saved</small>
         </div>
       </div>
 
       <div className="eats-city-lens">
         <header>
-          <span>world / {activeCity.name}</span>
+          <span>world / {activeRegion.name}</span>
           <div>
-            <h3>{activeCity.name}</h3>
-            <p>choose a neighborhood to narrow the future restaurant index.</p>
+            <h3>{activeRegion.name}</h3>
+            <p>{activeRegion.placeCount} ranked places across {activeRegion.cities.length} cities.</p>
           </div>
         </header>
-        <div className="eats-neighborhoods" aria-label={`${activeCity.name} sample neighborhoods`}>
-          {activeCity.neighborhoods.map((entry) => (
+
+        <div className="eats-neighborhoods" aria-label={`${activeRegion.name} city index`}>
+          <button
+            className={activeCity === "all" ? "is-active" : undefined}
+            type="button"
+            aria-pressed={activeCity === "all"}
+            onClick={() => setActiveCity("all")}
+          >
+            <span>all cities</span>
+            <small>{activeRegion.placeCount}</small>
+          </button>
+          {activeRegion.cities.map((city) => (
             <button
-              className={neighborhood.name === entry.name ? "is-active" : undefined}
-              key={entry.name}
+              className={activeCity === city.name ? "is-active" : undefined}
+              key={city.name}
               type="button"
-              aria-pressed={neighborhood.name === entry.name}
-              onClick={() => setActiveNeighborhood(entry.name)}
+              aria-pressed={activeCity === city.name}
+              onClick={() => setActiveCity(city.name)}
             >
-              <span>{entry.name}</span>
-              <small>{entry.restaurantCount}</small>
+              <span>{city.name.replace(/, [A-Z]{2}$/, "")}</span>
+              <small>{city.placeCount}</small>
             </button>
           ))}
         </div>
-        <div className="eats-neighborhood-readout" aria-live="polite">
-          <span>{neighborhood.restaurantCount} sample places</span>
-          <div key={`${activeCity.slug}-${neighborhood.name}`}>
-            <strong>{neighborhood.name}</strong>
-            <small>{neighborhood.note}</small>
+
+        <div className="eats-index-tools">
+          <label>
+            <span>search</span>
+            <input
+              type="search"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder={`search ${activeRegion.name}`}
+            />
+          </label>
+          <div className="eats-category-filter" aria-label="Filter places by category">
+            <button
+              className={activeCategory === "all" ? "is-active" : undefined}
+              type="button"
+              aria-pressed={activeCategory === "all"}
+              onClick={() => setActiveCategory("all")}
+            >
+              all
+            </button>
+            {activeRegion.categories.map((category) => (
+              <button
+                className={activeCategory === category.name ? "is-active" : undefined}
+                key={category.name}
+                type="button"
+                aria-pressed={activeCategory === category.name}
+                onClick={() => setActiveCategory(category.name)}
+              >
+                {category.name}
+              </button>
+            ))}
           </div>
-          <span>restaurant index connects here <span aria-hidden="true">→</span></span>
         </div>
+
+        <div className="eats-results-meta" aria-live="polite">
+          <span>{filteredPlaces.length} {filteredPlaces.length === 1 ? "place" : "places"}</span>
+          <span>{activeCity === "all" ? `${activeCityCount} in this region` : activeCity}</span>
+        </div>
+
+        {filteredPlaces.length ? (
+          <ol className="eats-place-index">
+            {filteredPlaces.slice(0, visibleCount).map((place) => (
+              <li key={`${place.category}-${place.rank}-${place.name}`}>
+                <span className="eats-place-rank">#{place.rank}</span>
+                <span className="eats-place-name">
+                  <strong>{place.name}</strong>
+                  <small>{place.city}</small>
+                </span>
+                <span className="eats-place-category">{place.category}</span>
+              </li>
+            ))}
+          </ol>
+        ) : (
+          <p className="eats-empty-state">nothing in this part of the index yet.</p>
+        )}
+
+        {visibleCount < filteredPlaces.length ? (
+          <button className="eats-show-more" type="button" onClick={() => setVisibleCount((count) => count + pageSize)}>
+            show {Math.min(pageSize, filteredPlaces.length - visibleCount)} more <span aria-hidden="true">↓</span>
+          </button>
+        ) : null}
       </div>
 
       <p className="taste-prototype-note">
-        the live version keeps the world layer light, then makes each city searchable by neighborhood, cuisine,
-        year, and ranking after the Beli export is connected.
+        this is a local snapshot of my Beli data. rankings stay on Beli; this page turns the export into a browsable atlas.
       </p>
     </section>
   );

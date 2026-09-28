@@ -38,3 +38,6 @@ yarn-error.log*
 /dist/
 /.wrangler/
 /outputs/
+
+# private exports stay local; only sanitized generated site data is committed
+/data/private/

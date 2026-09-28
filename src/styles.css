@@ -5,6 +5,7 @@
   --muted: #91918b;
   --line: #292927;
   --accent: #6f9fc9;
+  --surface: #121313;
   --map-land: #1a1c1e;
   --map-line: #383b3f;
   --spotlight-color: rgba(77, 126, 171, 0.22);
@@ -24,6 +25,7 @@
   --muted: #656560;
   --line: #d8d8d2;
   --accent: #205ea6;
+  --surface: #efefea;
   --map-land: #e8e8e2;
   --map-line: #c8c8c0;
   --spotlight-color: rgba(44, 103, 157, 0.15);
@@ -134,11 +136,16 @@ button {
   letter-spacing: 0.01em;
 }
 
+.header-tools,
 .social-links,
 .site-nav {
   display: flex;
   align-items: center;
   gap: 1.2rem;
+}
+
+.header-tools {
+  gap: 1rem;
 }
 
 .social-links {
@@ -232,6 +239,22 @@ button {
   justify-content: center;
   min-height: clamp(21rem, 48vh, 29rem);
   max-width: 54rem;
+}
+
+.theme-toggle {
+  display: grid;
+  place-items: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1;
+  transition: color 140ms ease, transform 140ms ease;
+}
+
+.theme-toggle:hover {
+  color: var(--text);
+  transform: rotate(18deg);
 }
 
 .hero h1 {
@@ -387,6 +410,55 @@ button {
   font-size: 0.88rem;
 }
 
+.about-profile {
+  display: grid;
+  grid-template-columns: minmax(0, 13.5rem) minmax(0, 1fr);
+  gap: clamp(2rem, 6vw, 4rem);
+  align-items: start;
+  padding: 1.25rem 0 2rem;
+  border-top: 1px solid var(--line);
+}
+
+.about-profile figure {
+  margin: 0;
+}
+
+.about-profile img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  filter: saturate(0.9) contrast(0.98);
+}
+
+.about-profile figcaption {
+  display: block;
+  margin-top: 0.65rem;
+  color: var(--muted);
+  font-size: 0.7rem;
+}
+
+.about-copy h2 {
+  margin: 0 0 1.15rem;
+  font-family: var(--font-serif);
+  font-size: clamp(1.75rem, 4vw, 2.35rem);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+}
+
+.about-copy p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.98rem;
+  line-height: 1.65;
+}
+
+.about-copy p + p {
+  margin-top: 1rem;
+}
+
 .life-destination {
   display: grid;
   grid-template-columns: 3.15rem minmax(0, 1fr) auto;
@@ -485,6 +557,36 @@ button {
 .taste-archive-meta a {
   color: var(--text);
   white-space: nowrap;
+}
+
+.taste-archive-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.taste-archive-stats span {
+  display: grid;
+  gap: 0.05rem;
+  padding: 0.8rem 0.9rem;
+  border-right: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.65rem;
+}
+
+.taste-archive-stats span:first-child {
+  padding-left: 0;
+}
+
+.taste-archive-stats span:last-child {
+  border-right: 0;
+}
+
+.taste-archive-stats strong {
+  color: var(--text);
+  font-size: 1rem;
+  font-weight: 500;
 }
 
 .eats-atlas-map-shell {
@@ -652,7 +754,7 @@ button {
 
 .eats-neighborhoods {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr));
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
 }
@@ -699,25 +801,134 @@ button {
   font-size: 0.65rem;
 }
 
-.eats-neighborhood-readout {
-  min-height: 4.4rem;
-  padding: 0.75rem 0;
-}
-
-.eats-neighborhood-readout > div {
+.eats-index-tools {
   display: grid;
-  margin-left: auto;
-  animation: travel-readout-in 180ms ease-out both;
+  grid-template-columns: minmax(12rem, 1fr) auto;
+  gap: 1.5rem;
+  align-items: end;
+  padding: 1rem 0;
 }
 
-.eats-neighborhood-readout strong {
+.eats-index-tools label {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.8rem;
+  align-items: center;
+  color: var(--muted);
+  font-size: 0.68rem;
+}
+
+.eats-index-tools input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  padding: 0.35rem 0;
+  outline: 0;
+  background: transparent;
   color: var(--text);
-  font-size: 0.82rem;
+  font: inherit;
+  font-size: 0.76rem;
+}
+
+.eats-index-tools input:focus {
+  border-bottom-color: var(--accent);
+}
+
+.eats-category-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.8rem;
+  justify-content: flex-end;
+}
+
+.eats-category-filter button {
+  border-bottom: 1px solid transparent;
+  color: var(--muted);
+  font-size: 0.68rem;
+}
+
+.eats-category-filter button:hover,
+.eats-category-filter button:focus-visible,
+.eats-category-filter button.is-active {
+  border-bottom-color: currentColor;
+  color: var(--text);
+}
+
+.eats-results-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.65rem 0;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.68rem;
+}
+
+.eats-place-index {
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--line);
+  list-style: none;
+}
+
+.eats-place-index li {
+  display: grid;
+  grid-template-columns: 3.4rem minmax(0, 1fr) auto;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.eats-place-rank,
+.eats-place-category,
+.eats-place-name small {
+  color: var(--muted);
+  font-size: 0.66rem;
+}
+
+.eats-place-name {
+  display: grid;
+  min-width: 0;
+  gap: 0.06rem;
+}
+
+.eats-place-name strong {
+  overflow: hidden;
+  font-size: 0.8rem;
   font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.eats-neighborhood-readout > span:last-child {
+.eats-place-category {
+  text-align: right;
+}
+
+.eats-show-more {
+  width: 100%;
+  padding: 0.9rem 0;
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.7rem;
+  text-align: left;
+}
+
+.eats-show-more:hover,
+.eats-show-more:focus-visible {
   color: var(--text);
+}
+
+.eats-empty-state {
+  margin: 0;
+  padding: 1.2rem 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.76rem;
 }
 
 .taste-prototype-note {
@@ -1186,6 +1397,15 @@ button {
     padding: 2rem 0 2.5rem;
   }
 
+  .about-profile {
+    grid-template-columns: 1fr;
+    gap: 1.75rem;
+  }
+
+  .about-profile figure {
+    width: min(68vw, 14rem);
+  }
+
   .document-page {
     padding: 4rem 0 5rem;
   }
@@ -1235,7 +1455,7 @@ button {
   }
 
   .eats-city-lens header,
-  .eats-neighborhood-readout {
+  .eats-results-meta {
     align-items: flex-start;
     flex-direction: column;
     gap: 0.45rem;
@@ -1257,12 +1477,18 @@ button {
     border-right: 0;
   }
 
-  .eats-neighborhoods button:nth-last-child(-n + 2) {
-    border-bottom: 0;
+  .eats-index-tools {
+    grid-template-columns: 1fr;
+    gap: 0.8rem;
   }
 
-  .eats-neighborhood-readout > div {
-    margin-left: 0;
+  .eats-category-filter {
+    justify-content: flex-start;
+  }
+
+  .eats-place-index li {
+    grid-template-columns: 2.4rem minmax(0, 1fr) auto;
+    gap: 0.65rem;
   }
 
   .travel-map {

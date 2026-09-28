@@ -34,6 +34,7 @@ export interface TravelPlace {
   slug: string;
   name: string;
   location: string;
+  dates: string;
   status: TravelStatus;
   coordinates: {
     longitude: number;
@@ -59,6 +60,10 @@ export interface LifePageContent {
 export interface SiteContent {
   hero: string;
   now: string;
+  about: {
+    portraitCaption: string;
+    paragraphs: string[];
+  };
   work: {
     description: string;
     areas: WorkArea[];
@@ -79,6 +84,10 @@ export interface SiteContent {
 export const siteContent: SiteContent = {
   hero: "hi, i’m jathin.",
   now: "i’m a recent berkeley eecs grad, raised in la. i write about my raw, unfiltered thoughts on the world across travel, tech, fitness, & food. right now, i’m exploring infra + performance problems @ openai.",
+  about: {
+    portraitCaption: "me @ cal hacks freshman year",
+    paragraphs: ["PLACEHOLDER"],
+  },
   work: {
     description: "a small index of what i’m exploring.",
     areas: [
@@ -116,6 +125,7 @@ export const siteContent: SiteContent = {
         slug: "belgium",
         name: "belgium",
         location: "belgium",
+        dates: "7/20–7/23",
         status: "visited",
         coordinates: { longitude: 4.67, latitude: 50.64 },
       },
@@ -123,6 +133,7 @@ export const siteContent: SiteContent = {
         slug: "london",
         name: "london",
         location: "united kingdom",
+        dates: "7/15–7/20",
         status: "visited",
         coordinates: { longitude: -0.13, latitude: 51.51 },
       },
@@ -130,6 +141,7 @@ export const siteContent: SiteContent = {
         slug: "amsterdam",
         name: "amsterdam",
         location: "the netherlands",
+        dates: "7/23–7/27",
         status: "visited",
         coordinates: { longitude: 4.9, latitude: 52.37 },
       },
@@ -137,6 +149,7 @@ export const siteContent: SiteContent = {
         slug: "guatemala",
         name: "guatemala",
         location: "guatemala",
+        dates: "6/9–6/14",
         status: "visited",
         coordinates: { longitude: -90.95, latitude: 14.65 },
         route: ["antigua", "acatenango", "lake atitlán"],
@@ -145,6 +158,7 @@ export const siteContent: SiteContent = {
         slug: "mexico-city",
         name: "cdmx",
         location: "mexico",
+        dates: "5/31–6/6",
         status: "visited",
         coordinates: { longitude: -99.13, latitude: 19.43 },
       },
@@ -152,6 +166,7 @@ export const siteContent: SiteContent = {
         slug: "hyderabad",
         name: "hyderabad",
         location: "india",
+        dates: "6/23–7/15",
         status: "visited",
         coordinates: { longitude: 78.49, latitude: 17.39 },
       },
@@ -159,6 +174,7 @@ export const siteContent: SiteContent = {
         slug: "kashmir",
         name: "kashmir",
         location: "india",
+        dates: "7/10–7/13",
         status: "visited",
         coordinates: { longitude: 74.8, latitude: 34.08 },
       },

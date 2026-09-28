@@ -82,7 +82,9 @@ export function TravelMap({ places }: { places: TravelPlace[] }) {
             </span>
             <span className="travel-map-readout-copy">
               <strong>{activeMarker.item.name}</strong>
-              <small>{activeMarker.item.route?.join(" · ") ?? activeMarker.item.location}</small>
+              <small>
+                {activeMarker.item.dates} · {activeMarker.item.route?.join(" · ") ?? activeMarker.item.location}
+              </small>
             </span>
             <span className="travel-map-readout-action">explore adventure <span aria-hidden="true">↗</span></span>
           </a>

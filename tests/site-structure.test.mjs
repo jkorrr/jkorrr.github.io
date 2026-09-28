@@ -8,6 +8,7 @@ const sourceRoot = new URL("../src/", import.meta.url);
 test("builds the homepage, documentation pages, and seven travel journals", async () => {
   const pages = [
     ["index.html", /<title>jathin<\/title>/i],
+    ["about/index.html", /<title>about — jathin<\/title>/i],
     ["work/index.html", /<title>work — jathin<\/title>/i],
     ["thoughts/index.html", /<title>thoughts — jathin<\/title>/i],
     ["fitness/index.html", /<title>fitness — jathin<\/title>/i],
@@ -39,14 +40,17 @@ test("keeps the horizontal homepage and adds an accessible life dropdown", async
   assert.match(app, /href="\/#now"/i);
   assert.match(app, /href="\/work\/"/i);
   assert.match(app, /href="\/thoughts\/"/i);
+  assert.match(app, /href="\/about\/"/i);
   assert.match(app, /aria-expanded=\{lifeOpen\}/i);
   assert.match(app, /aria-controls="life-menu"/i);
   assert.match(app, /event\.key === "Escape"/i);
   assert.match(app, /fitness[\s\S]*eats[\s\S]*travel/i);
   assert.match(homePage, /<Section id="work" title="work">[\s\S]*open the index/i);
+  assert.doesNotMatch(homePage, /jathin-portrait\.jpg/i);
   assert.doesNotMatch(homePage, /siteContent\.work\.areas\.map/i);
   assert.match(app, /function WorkPage\(\)[\s\S]*siteContent\.work\.areas\.map/i);
   assert.match(app, /function ThoughtsPage\(\)[\s\S]*siteContent\.thoughts\.items\.map/i);
+  assert.match(app, /function AboutPage\(\)[\s\S]*className="about-profile"[\s\S]*jathin-portrait\.jpg/i);
   assert.match(app, /function EatsPage\(\)[\s\S]*<EatsArchive/i);
   assert.match(app, /function TravelPage\(\)[\s\S]*<TravelMap places=\{siteContent\.travel\.places\}/i);
   assert.doesNotMatch(app, /className="travel-journeys"/i);
@@ -57,6 +61,8 @@ test("keeps the horizontal homepage and adds an accessible life dropdown", async
 test("stores honest Work, Thoughts, and Life content", async () => {
   const content = await readFile(new URL("content.ts", sourceRoot), "utf8");
   assert.match(content, /hero:\s*"hi, i’m jathin\."/i);
+  assert.match(content, /portraitCaption:\s*"me @ cal hacks freshman year"/i);
+  assert.match(content, /paragraphs:\s*\["PLACEHOLDER"\]/i);
   assert.match(content, /a small index of what i’m exploring/i);
   assert.match(content, /engineering[\s\S]*https:\/\/github\.com\/jkorrr/i);
   assert.match(content, /research[\s\S]*scholar\.google\.com\/citations\?view_op=new_articles/i);
@@ -76,6 +82,8 @@ test("stores honest Work, Thoughts, and Life content", async () => {
   assert.match(content, /slug:\s*"belgium"[\s\S]*slug:\s*"london"[\s\S]*slug:\s*"amsterdam"/i);
   assert.match(content, /slug:\s*"guatemala"[\s\S]*antigua[\s\S]*acatenango[\s\S]*lake atitlán/i);
   assert.match(content, /slug:\s*"mexico-city"[\s\S]*slug:\s*"hyderabad"[\s\S]*slug:\s*"kashmir"/i);
+  assert.match(content, /belgium[\s\S]*7\/20–7\/23[\s\S]*london[\s\S]*7\/15–7\/20[\s\S]*amsterdam[\s\S]*7\/23–7\/27/i);
+  assert.match(content, /guatemala[\s\S]*6\/9–6\/14[\s\S]*mexico-city[\s\S]*5\/31–6\/6[\s\S]*hyderabad[\s\S]*6\/23–7\/15[\s\S]*kashmir[\s\S]*7\/10–7\/13/i);
   assert.match(content, /https:\/\/www\.linkedin\.com\/in\/jathin-k/i);
   assert.match(content, /https:\/\/www\.instagram\.com\/jathin_korrapati/i);
 });
@@ -105,6 +113,7 @@ test("preserves typography, themes, spotlight, and responsive navigation", async
   assert.match(styles, /\.travel-map-marker/i);
   assert.match(styles, /\.travel-journal-outline/i);
   assert.doesNotMatch(app, /className="hero-portrait"/i);
+  assert.match(styles, /\.about-profile/i);
   assert.match(travelMap, /fetch\("\/world-land\.geojson"\)/i);
   assert.match(travelMap, /aria-labelledby="travel-map-title travel-map-description"/i);
   assert.doesNotMatch(travelMap, /field atlas/i);
@@ -114,11 +123,16 @@ test("preserves typography, themes, spotlight, and responsive navigation", async
   assert.match(travelMap, /hover to preview; select to explore the adventure/i);
   assert.match(eatsArchive, /where i've eaten, so far\./i);
   assert.match(eatsArchive, /full rankings on beli/i);
-  assert.match(eatsArchive, /select a city to open its local index/i);
-  assert.match(eatsArchive, /choose a neighborhood to narrow/i);
+  assert.match(eatsArchive, /select a region to open its local index/i);
+  assert.match(eatsArchive, /type="search"/i);
+  assert.match(eatsArchive, /eats-place-index/i);
   assert.match(eatsArchive, /fetch\("\/world-land\.geojson"\)/i);
-  assert.match(eatsData, /isPlaceholder:\s*true/i);
-  assert.match(eatsData, /totalRestaurants:\s*500/i);
+  assert.match(eatsData, /"isPlaceholder":\s*false/i);
+  assert.match(eatsData, /"totalPlaces":\s*531/i);
+  assert.match(eatsData, /"totalSaved":\s*454/i);
+  assert.match(eatsData, /"uniqueCities":\s*77/i);
+  assert.match(eatsData, /"name":\s*"Porto's Bakery and Cafe"/i);
+  assert.doesNotMatch(eatsData, /Email|Phone Number|Device ID|Stripe|Note Text|Comment Text|Image URL|User ID/i);
   assert.match(styles, /@media \(prefers-reduced-motion: reduce\)/i);
   assert.match(styles, /html\[data-spotlight="true"\] body::before/i);
   assert.doesNotMatch(styles, /static-grid|hero-orb|floating-nav|pastel/i);
@@ -134,5 +148,6 @@ test("emits shared compiled assets and favicon", async () => {
   await access(new URL(stylesheet.replace(/^\//, ""), distRoot));
   await access(new URL("favicon.svg", distRoot));
   await access(new URL("beli-icon.webp", distRoot));
+  await access(new URL("jathin-portrait.jpg", distRoot));
   await access(new URL("world-land.geojson", distRoot));
 });

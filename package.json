@@ -10,6 +10,7 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
+    "import:beli": "node scripts/import-beli.mjs",
     "test": "npm run build && node --test tests/site-structure.test.mjs"
   },
   "dependencies": {

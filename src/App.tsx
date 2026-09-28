@@ -6,7 +6,7 @@ import { EatsArchive } from "./EatsArchive";
 import { TravelMap } from "./TravelMap";
 
 type Theme = "dark" | "light";
-type PageId = "home" | "work" | "thoughts" | "fitness" | "eats" | "travel" | "travel-detail";
+type PageId = "home" | "about" | "work" | "thoughts" | "fitness" | "eats" | "travel" | "travel-detail";
 
 const themeStorageKey = "jkorr-theme";
 const lifePages = siteContent.life.map((page) => ({ label: page.title, href: `/${page.title}/` }));
@@ -27,7 +27,7 @@ function getTravelSlug() {
 function getCurrentPage(): PageId {
   if (getTravelSlug()) return "travel-detail";
   const segment = window.location.pathname.split("/").filter(Boolean).at(-1);
-  return segment === "work" || segment === "thoughts" || segment === "fitness" || segment === "eats" || segment === "travel"
+  return segment === "about" || segment === "work" || segment === "thoughts" || segment === "fitness" || segment === "eats" || segment === "travel"
     ? segment
     : "home";
 }
@@ -108,21 +108,33 @@ function Header({ currentPage, theme, onToggleTheme }: { currentPage: PageId; th
 
   return (
     <header className="site-header" aria-label="site header">
-      <div className="social-links" aria-label="social links">
-        {siteContent.socialLinks.map((link) => {
-          const Icon = socialIcons[link.platform];
-          return link.href ? (
-            <a key={link.platform} href={link.href} target="_blank" rel="noreferrer" aria-label={link.label} title={link.label}>
-              <Icon aria-hidden="true" />
-            </a>
-          ) : null;
-        })}
+      <div className="header-tools">
+        <div className="social-links" aria-label="social links">
+          {siteContent.socialLinks.map((link) => {
+            const Icon = socialIcons[link.platform];
+            return link.href ? (
+              <a key={link.platform} href={link.href} target="_blank" rel="noreferrer" aria-label={link.label} title={link.label}>
+                <Icon aria-hidden="true" />
+              </a>
+            ) : null;
+          })}
+        </div>
+        <button
+          className="theme-toggle"
+          type="button"
+          onClick={onToggleTheme}
+          aria-label={`switch to ${theme === "dark" ? "light" : "dark"} mode`}
+          title={`switch to ${theme === "dark" ? "light" : "dark"} mode`}
+        >
+          <span aria-hidden="true">◐</span>
+        </button>
       </div>
 
       <nav className="site-nav" aria-label="primary navigation">
         <a href="/#now">now</a>
         <a href="/work/" aria-current={currentPage === "work" ? "page" : undefined}>work</a>
         <a href="/thoughts/" aria-current={currentPage === "thoughts" ? "page" : undefined}>thoughts</a>
+        <a href="/about/" aria-current={currentPage === "about" ? "page" : undefined}>about</a>
         <div className="life-nav" ref={lifeRef}>
           <button
             type="button"
@@ -147,9 +159,6 @@ function Header({ currentPage, theme, onToggleTheme }: { currentPage: PageId; th
             </div>
           ) : null}
         </div>
-        <button type="button" onClick={onToggleTheme} aria-label={`switch to ${theme === "dark" ? "light" : "dark"} mode`}>
-          {theme === "dark" ? "light" : "dark"}
-        </button>
       </nav>
     </header>
   );
@@ -324,6 +333,24 @@ function LifePage({ page }: { page: LifePageContent }) {
   );
 }
 
+function AboutPage() {
+  return (
+    <main id="main-content" className="document-page about-page">
+      <DocumentIntro section="about" title="about" />
+      <section className="about-profile" aria-labelledby="about-profile-title">
+        <figure>
+          <img src="/jathin-portrait.jpg" alt="portrait of jathin" width="512" height="512" />
+          <figcaption>{siteContent.about.portraitCaption}</figcaption>
+        </figure>
+        <div className="about-copy">
+          <h2 id="about-profile-title">a little more context.</h2>
+          {siteContent.about.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+        </div>
+      </section>
+    </main>
+  );
+}
+
 function TravelPage() {
   return (
     <main id="main-content" className="document-page travel-page">
@@ -355,7 +382,7 @@ function TravelDetailPage({ place }: { place: TravelPlace }) {
         description={`${place.location}. notes, photographs, and the story of this trip will live here.`}
       />
       <div className="travel-detail-meta">
-        <span>{place.status === "visited" ? "visited" : "want to go"}</span>
+        <span>{place.dates} · {place.status === "visited" ? "visited" : "want to go"}</span>
         <a href="/travel/">back to the atlas →</a>
       </div>
       <div className="travel-journal-outline">
@@ -392,6 +419,7 @@ function TravelDetailPage({ place }: { place: TravelPlace }) {
 }
 
 function Page({ id }: { id: PageId }) {
+  if (id === "about") return <AboutPage />;
   if (id === "work") return <WorkPage />;
   if (id === "thoughts") return <ThoughtsPage />;
   if (id === "eats") return <EatsPage />;
