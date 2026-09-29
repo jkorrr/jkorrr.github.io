@@ -527,6 +527,14 @@ button {
   width: min(100%, 50rem);
 }
 
+.eats-loading {
+  margin: 0;
+  padding: 1rem 0;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
 .taste-archive {
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
@@ -561,7 +569,7 @@ button {
 
 .taste-archive-stats {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
 }
@@ -856,6 +864,28 @@ button {
   color: var(--text);
 }
 
+.eats-category-filter .eats-photo-filter {
+  margin-left: 0.25rem;
+  color: var(--text);
+}
+
+.eats-category-filter .eats-photo-filter::before {
+  display: inline-block;
+  width: 0.42rem;
+  height: 0.42rem;
+  margin-right: 0.35rem;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  content: "";
+  vertical-align: 0.02rem;
+}
+
+.eats-category-filter .eats-photo-filter.is-active::before {
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--accent) 16%, transparent);
+}
+
 .eats-results-meta {
   display: flex;
   align-items: center;
@@ -876,18 +906,87 @@ button {
 
 .eats-place-index li {
   display: grid;
-  grid-template-columns: 3.4rem minmax(0, 1fr) auto;
-  gap: 1rem;
+  grid-template-columns: 3.1rem 3.75rem minmax(0, 1fr) auto;
+  gap: 0.9rem;
   align-items: center;
-  padding: 0.85rem 0;
+  min-height: 4.2rem;
+  padding: 0.55rem 0;
   border-bottom: 1px solid var(--line);
 }
 
 .eats-place-rank,
-.eats-place-category,
 .eats-place-name small {
   color: var(--muted);
   font-size: 0.66rem;
+}
+
+.eats-place-photo {
+  position: relative;
+  display: grid;
+  width: 3.1rem;
+  height: 3.1rem;
+  overflow: hidden;
+  padding: 0;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 0.2rem;
+  background: var(--surface);
+  color: var(--muted);
+}
+
+.eats-place-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(0.78) contrast(0.96);
+  transition: filter 180ms ease, transform 220ms ease;
+}
+
+.eats-place-photo:not(.is-empty):hover img,
+.eats-place-photo:not(.is-empty):focus-visible img {
+  filter: saturate(1) contrast(1);
+  transform: scale(1.05);
+}
+
+.eats-place-photo:not(.is-empty):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.eats-place-photo > span {
+  position: absolute;
+  right: 0.2rem;
+  bottom: 0.2rem;
+  min-width: 1.05rem;
+  padding: 0.08rem 0.2rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--background) 82%, transparent);
+  color: var(--text);
+  font-size: 0.58rem;
+  line-height: 1.2;
+  text-align: center;
+  backdrop-filter: blur(6px);
+}
+
+.eats-place-photo.is-empty {
+  border-style: dashed;
+  font-size: 0.68rem;
+}
+
+.eats-place-rank {
+  display: grid;
+  gap: 0.08rem;
+}
+
+.eats-place-rank strong {
+  color: var(--text);
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+.eats-place-rank small {
+  color: var(--muted);
+  font-size: 0.62rem;
 }
 
 .eats-place-name {
@@ -904,8 +1003,18 @@ button {
   white-space: nowrap;
 }
 
-.eats-place-category {
+.eats-place-location {
+  padding: 0.25rem 0;
+  border-bottom: 1px solid transparent;
+  color: var(--muted);
+  font-size: 0.66rem;
   text-align: right;
+}
+
+.eats-place-location:hover,
+.eats-place-location:focus-visible {
+  border-bottom-color: currentColor;
+  color: var(--text);
 }
 
 .eats-show-more {
@@ -937,6 +1046,109 @@ button {
   padding: 1rem 0;
   border-top: 1px solid var(--line);
   line-height: 1.5;
+}
+
+.eats-photo-dialog {
+  width: min(92vw, 44rem);
+  max-width: none;
+  max-height: 90vh;
+  overflow: visible;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 0.3rem;
+  background: var(--background);
+  color: var(--text);
+  box-shadow: 0 1.5rem 5rem rgb(0 0 0 / 0.45);
+}
+
+.eats-photo-dialog::backdrop {
+  background: rgb(0 0 0 / 0.72);
+  backdrop-filter: blur(8px);
+}
+
+.eats-photo-viewer {
+  padding: 0.65rem;
+}
+
+.eats-photo-viewer-meta,
+.eats-photo-viewer-controls,
+.eats-photo-viewer figcaption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.eats-photo-viewer-meta {
+  padding: 0.15rem 0.15rem 0.7rem;
+  color: var(--muted);
+  font-size: 0.68rem;
+}
+
+.eats-photo-viewer button,
+.eats-photo-viewer a {
+  color: var(--muted);
+  font-size: 0.68rem;
+}
+
+.eats-photo-viewer button:hover,
+.eats-photo-viewer button:focus-visible,
+.eats-photo-viewer a:hover,
+.eats-photo-viewer a:focus-visible {
+  color: var(--text);
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}
+
+.eats-photo-viewer figure {
+  margin: 0;
+}
+
+.eats-photo-viewer figure > img {
+  display: block;
+  width: 100%;
+  max-height: min(68vh, 38rem);
+  border-radius: 0.18rem;
+  object-fit: contain;
+  background: var(--surface);
+}
+
+.eats-photo-viewer figcaption {
+  padding: 0.75rem 0.15rem 0.2rem;
+}
+
+.eats-photo-viewer figcaption > span {
+  display: grid;
+  min-width: 0;
+  gap: 0.08rem;
+}
+
+.eats-photo-viewer figcaption strong {
+  overflow: hidden;
+  font-size: 0.78rem;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.eats-photo-viewer figcaption small,
+.eats-photo-viewer figcaption em {
+  color: var(--muted);
+  font-size: 0.65rem;
+  font-style: normal;
+}
+
+.eats-photo-viewer figcaption em {
+  margin-left: auto;
+  padding: 0.2rem 0.45rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.eats-photo-viewer-controls {
+  padding: 0.65rem 0.15rem 0.05rem;
+  border-top: 1px solid var(--line);
 }
 
 .travel-page {
@@ -1422,6 +1634,22 @@ button {
     gap: 0.65rem;
   }
 
+  .taste-archive-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .taste-archive-stats span:nth-child(2) {
+    border-right: 0;
+  }
+
+  .taste-archive-stats span:nth-child(-n + 2) {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .taste-archive-stats span:nth-child(3) {
+    padding-left: 0;
+  }
+
   .eats-atlas-map-meta {
     align-items: flex-start;
     flex-direction: column;
@@ -1487,8 +1715,32 @@ button {
   }
 
   .eats-place-index li {
-    grid-template-columns: 2.4rem minmax(0, 1fr) auto;
-    gap: 0.65rem;
+    grid-template-columns: 3.1rem 3.1rem minmax(0, 1fr);
+    gap: 0.55rem;
+  }
+
+  .eats-place-location {
+    grid-column: 3;
+    justify-self: start;
+    margin-top: -0.55rem;
+  }
+
+  .eats-place-name strong {
+    white-space: normal;
+  }
+
+  .eats-photo-viewer figcaption {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 0.55rem 0.8rem;
+  }
+
+  .eats-photo-viewer figcaption > span {
+    width: 100%;
+  }
+
+  .eats-photo-viewer figcaption em {
+    margin-left: 0;
   }
 
   .travel-map {

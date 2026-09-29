@@ -176,7 +176,32 @@ const regionDefinitions = [
 const cityToRegion = new Map(regionDefinitions.flatMap((region) => region.cities.map((city) => [city, region.slug])));
 const rankings = parseCsv(readZipEntry("rankings.csv"));
 const bookmarks = parseCsv(readZipEntry("bookmarks.csv"));
+const photos = parseCsv(readZipEntry("photos.csv"));
 const exportDetails = parseCsv(readZipEntry("export_details.csv"))[0];
+
+const placeKey = (name, city) => `${name.trim().toLocaleLowerCase()}|${city.trim().toLocaleLowerCase()}`;
+const photosByPlace = new Map();
+
+for (const photo of photos) {
+  const url = photo["Image URL"]?.trim();
+  if (!url) continue;
+
+  const key = placeKey(photo["Business Name"], photo.City);
+  const placePhotos = photosByPlace.get(key) ?? [];
+  placePhotos.push({
+    url,
+    isFavoriteDish: photo["Is Favorite Dish"].trim().toLocaleLowerCase() === "true",
+    uploadedAt: photo["Upload Date"].trim(),
+  });
+  photosByPlace.set(key, placePhotos);
+}
+
+for (const placePhotos of photosByPlace.values()) {
+  placePhotos.sort((first, second) => (
+    Number(second.isFavoriteDish) - Number(first.isFavoriteDish)
+    || second.uploadedAt.localeCompare(first.uploadedAt)
+  ));
+}
 
 const unmatchedRankingCities = [...new Set(rankings.map((row) => row.City).filter((city) => !cityToRegion.has(city)))];
 if (unmatchedRankingCities.length) {
@@ -192,6 +217,8 @@ const regions = regionDefinitions
         city: row.City.trim(),
         category: categoryLabels[row.Category] ?? "restaurant",
         rank: Number.parseInt(row.Rank, 10),
+        photos: (photosByPlace.get(placeKey(row["Restaurant Name"], row.City)) ?? [])
+          .map(({ url, isFavoriteDish }) => ({ url, isFavoriteDish })),
       }))
       .sort((first, second) => first.rank - second.rank || first.name.localeCompare(second.name));
 
@@ -226,6 +253,8 @@ const output = {
   isPlaceholder: false,
   totalPlaces: rankings.length,
   totalSaved: bookmarks.length,
+  totalPhotos: photos.length,
+  photographedPlaces: rankings.filter((row) => photosByPlace.has(placeKey(row["Restaurant Name"], row.City))).length,
   uniqueCities: new Set(rankings.map((row) => row.City)).size,
   regions,
 };
@@ -237,6 +266,7 @@ export interface TastePlace {
   city: string;
   category: TasteCategory;
   rank: number;
+  photos: Array<{ url: string; isFavoriteDish: boolean }>;
 }
 
 export interface TasteRegion {
@@ -256,12 +286,15 @@ export interface EatsData {
   isPlaceholder: false;
   totalPlaces: number;
   totalSaved: number;
+  totalPhotos: number;
+  photographedPlaces: number;
   uniqueCities: number;
   regions: TasteRegion[];
 }
 
 // Generated from the private Beli export by scripts/import-beli.mjs.
-// Only public-facing restaurant, city, category, and rank fields are included.
+// Only public-facing restaurant, city, category, category-rank, and photo URLs are included.
+// Private descriptions, notes, account fields, and device data are excluded.
 export const eatsData: EatsData = ${JSON.stringify(output, null, 2)};
 `;
 
@@ -269,4 +302,5 @@ const outputPath = path.resolve("src/eatsData.ts");
 await writeFile(outputPath, moduleSource, "utf8");
 
 console.log(`Imported ${output.totalPlaces} ranked places across ${output.uniqueCities} cities.`);
-console.log(`Generated ${outputPath}. No private notes, account fields, photos, or device data were included.`);
+console.log(`Matched ${output.photographedPlaces} ranked places to ${output.totalPhotos} exported photos.`);
+console.log(`Generated ${outputPath}. No private descriptions, notes, account fields, or device data were included.`);

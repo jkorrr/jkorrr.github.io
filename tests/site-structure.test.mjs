@@ -126,10 +126,15 @@ test("preserves typography, themes, spotlight, and responsive navigation", async
   assert.match(eatsArchive, /select a region to open its local index/i);
   assert.match(eatsArchive, /type="search"/i);
   assert.match(eatsArchive, /eats-place-index/i);
+  assert.match(eatsArchive, /google\.com\/maps\/search\/\?api=1/i);
+  assert.match(eatsArchive, /with photos/i);
+  assert.match(eatsArchive, /className="eats-photo-dialog"/i);
   assert.match(eatsArchive, /fetch\("\/world-land\.geojson"\)/i);
   assert.match(eatsData, /"isPlaceholder":\s*false/i);
   assert.match(eatsData, /"totalPlaces":\s*531/i);
   assert.match(eatsData, /"totalSaved":\s*454/i);
+  assert.match(eatsData, /"totalPhotos":\s*1019/i);
+  assert.match(eatsData, /"photographedPlaces":\s*422/i);
   assert.match(eatsData, /"uniqueCities":\s*77/i);
   assert.match(eatsData, /"name":\s*"Porto's Bakery and Cafe"/i);
   assert.doesNotMatch(eatsData, /Email|Phone Number|Device ID|Stripe|Note Text|Comment Text|Image URL|User ID/i);

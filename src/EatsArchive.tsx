@@ -1,8 +1,17 @@
-import { useEffect, useMemo, useState } from "react";
-import { eatsData, type TasteCategory } from "./eatsData";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { eatsData, type TasteCategory, type TastePlace } from "./eatsData";
 import { createWorldPath, layoutGeoMarkers, mapHeight, mapWidth, type LandCollection } from "./mapGeometry";
 
 const pageSize = 12;
+
+type GalleryState = {
+  place: TastePlace;
+  index: number;
+};
+
+function mapsHref(place: Pick<TastePlace, "name" | "city">) {
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${place.name}, ${place.city}`)}`;
+}
 
 function formatExportDate(value: string) {
   if (!value) return "recent export";
@@ -20,8 +29,11 @@ export function EatsArchive() {
   const [activeSlug, setActiveSlug] = useState(firstRegion.slug);
   const [activeCity, setActiveCity] = useState("all");
   const [activeCategory, setActiveCategory] = useState<"all" | TasteCategory>("all");
+  const [photoOnly, setPhotoOnly] = useState(false);
   const [query, setQuery] = useState("");
   const [visibleCount, setVisibleCount] = useState(pageSize);
+  const [gallery, setGallery] = useState<GalleryState | null>(null);
+  const galleryRef = useRef<HTMLDialogElement>(null);
   const markers = useMemo(() => layoutGeoMarkers(eatsData.regions, 32, 38), []);
   const activeRegion = eatsData.regions.find(({ slug }) => slug === activeSlug) ?? firstRegion;
   const activeRegionIndex = eatsData.regions.findIndex(({ slug }) => slug === activeRegion.slug);
@@ -32,12 +44,13 @@ export function EatsArchive() {
     return activeRegion.places.filter((place) => {
       const matchesCity = activeCity === "all" || place.city === activeCity;
       const matchesCategory = activeCategory === "all" || place.category === activeCategory;
+      const matchesPhoto = !photoOnly || place.photos.length > 0;
       const matchesQuery = !normalizedQuery
         || place.name.toLocaleLowerCase().includes(normalizedQuery)
         || place.city.toLocaleLowerCase().includes(normalizedQuery);
-      return matchesCity && matchesCategory && matchesQuery;
+      return matchesCity && matchesCategory && matchesPhoto && matchesQuery;
     });
-  }, [activeCategory, activeCity, activeRegion, query]);
+  }, [activeCategory, activeCity, activeRegion, photoOnly, query]);
 
   useEffect(() => {
     let active = true;
@@ -60,7 +73,15 @@ export function EatsArchive() {
 
   useEffect(() => {
     setVisibleCount(pageSize);
-  }, [activeCategory, activeCity, activeSlug, query]);
+  }, [activeCategory, activeCity, activeSlug, photoOnly, query]);
+
+  useEffect(() => {
+    const dialog = galleryRef.current;
+    if (!dialog) return;
+
+    if (gallery && !dialog.open) dialog.showModal();
+    if (!gallery && dialog.open) dialog.close();
+  }, [gallery]);
 
   const selectRegion = (slug: string) => {
     setActiveSlug(slug);
@@ -88,6 +109,7 @@ export function EatsArchive() {
       <div className="taste-archive-stats" aria-label="Beli export summary">
         <span><strong>{eatsData.totalPlaces}</strong> ranked</span>
         <span><strong>{eatsData.uniqueCities}</strong> cities</span>
+        <span><strong>{eatsData.photographedPlaces}</strong> photographed</span>
         <span><strong>{eatsData.totalSaved}</strong> saved</span>
       </div>
 
@@ -207,6 +229,14 @@ export function EatsArchive() {
                 {category.name}
               </button>
             ))}
+            <button
+              className={photoOnly ? "is-active eats-photo-filter" : "eats-photo-filter"}
+              type="button"
+              aria-pressed={photoOnly}
+              onClick={() => setPhotoOnly((current) => !current)}
+            >
+              with photos
+            </button>
           </div>
         </div>
 
@@ -218,13 +248,40 @@ export function EatsArchive() {
         {filteredPlaces.length ? (
           <ol className="eats-place-index">
             {filteredPlaces.slice(0, visibleCount).map((place) => (
-              <li key={`${place.category}-${place.rank}-${place.name}`}>
-                <span className="eats-place-rank">#{place.rank}</span>
+              <li className={place.photos.length ? "has-photo" : undefined} key={`${place.category}-${place.rank}-${place.name}`}>
+                {place.photos.length ? (
+                  <button
+                    className="eats-place-photo"
+                    type="button"
+                    aria-label={`View ${place.photos.length} ${place.photos.length === 1 ? "photo" : "photos"} from ${place.name}`}
+                    onClick={() => setGallery({ place, index: 0 })}
+                  >
+                    <img src={place.photos[0].url} alt="" loading="lazy" decoding="async" />
+                    {place.photos.length > 1 ? <span>{place.photos.length}</span> : null}
+                  </button>
+                ) : (
+                  <span className="eats-place-photo is-empty" aria-hidden="true">—</span>
+                )}
+                <span className="eats-place-rank">
+                  <strong>#{place.rank}</strong>
+                  <small>{place.category}</small>
+                </span>
                 <span className="eats-place-name">
                   <strong>{place.name}</strong>
-                  <small>{place.city}</small>
+                  <small>
+                    {place.city}
+                    {place.photos.some(({ isFavoriteDish }) => isFavoriteDish) ? " · favorite dish captured" : ""}
+                  </small>
                 </span>
-                <span className="eats-place-category">{place.category}</span>
+                <a
+                  className="eats-place-location"
+                  href={mapsHref(place)}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label={`Find ${place.name} in ${place.city} on Google Maps`}
+                >
+                  maps
+                </a>
               </li>
             ))}
           </ol>
@@ -240,8 +297,66 @@ export function EatsArchive() {
       </div>
 
       <p className="taste-prototype-note">
-        this is a local snapshot of my Beli data. rankings stay on Beli; this page turns the export into a browsable atlas.
+        a snapshot of my Beli data, recut as a browsable atlas. ranks are within each category; maps opens a live location search.
       </p>
+
+      <dialog
+        className="eats-photo-dialog"
+        ref={galleryRef}
+        aria-label={gallery ? `Photos from ${gallery.place.name}` : "Restaurant photos"}
+        onClose={() => setGallery(null)}
+        onClick={(event) => {
+          if (event.target === event.currentTarget) event.currentTarget.close();
+        }}
+      >
+        {gallery ? (
+          <div className="eats-photo-viewer">
+            <div className="eats-photo-viewer-meta">
+              <span>{String(gallery.index + 1).padStart(2, "0")} / {String(gallery.place.photos.length).padStart(2, "0")}</span>
+              <form method="dialog">
+                <button type="submit" aria-label="Close photo viewer">close</button>
+              </form>
+            </div>
+            <figure>
+              <img
+                src={gallery.place.photos[gallery.index].url}
+                alt={`At ${gallery.place.name} in ${gallery.place.city}`}
+                decoding="async"
+              />
+              <figcaption>
+                <span>
+                  <strong>{gallery.place.name}</strong>
+                  <small>{gallery.place.city}</small>
+                </span>
+                {gallery.place.photos[gallery.index].isFavoriteDish ? <em>favorite dish</em> : null}
+                <a href={mapsHref(gallery.place)} target="_blank" rel="noreferrer">view on maps</a>
+              </figcaption>
+            </figure>
+            {gallery.place.photos.length > 1 ? (
+              <div className="eats-photo-viewer-controls">
+                <button
+                  type="button"
+                  onClick={() => setGallery((current) => current && ({
+                    ...current,
+                    index: (current.index - 1 + current.place.photos.length) % current.place.photos.length,
+                  }))}
+                >
+                  previous
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setGallery((current) => current && ({
+                    ...current,
+                    index: (current.index + 1) % current.place.photos.length,
+                  }))}
+                >
+                  next
+                </button>
+              </div>
+            ) : null}
+          </div>
+        ) : null}
+      </dialog>
     </section>
   );
 }

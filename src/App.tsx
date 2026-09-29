@@ -1,9 +1,10 @@
 import { motion, useReducedMotion } from "motion/react";
-import { useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { FaGithub, FaInstagram, FaLinkedinIn } from "react-icons/fa6";
 import { siteContent, type LifePageContent, type SocialPlatform, type TravelPlace } from "./content";
-import { EatsArchive } from "./EatsArchive";
 import { TravelMap } from "./TravelMap";
+
+const EatsArchive = lazy(() => import("./EatsArchive").then((module) => ({ default: module.EatsArchive })));
 
 type Theme = "dark" | "light";
 type PageId = "home" | "about" | "work" | "thoughts" | "fitness" | "eats" | "travel" | "travel-detail";
@@ -364,7 +365,9 @@ function EatsPage() {
   return (
     <main id="main-content" className="document-page eats-page">
       <DocumentIntro section="life" title="eats" description="a life worth living to eat in" />
-      <EatsArchive />
+      <Suspense fallback={<p className="eats-loading">opening the atlas…</p>}>
+        <EatsArchive />
+      </Suspense>
     </main>
   );
 }
