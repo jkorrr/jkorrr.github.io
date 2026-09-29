@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { FaLocationDot } from "react-icons/fa6";
 import { eatsData, type TasteCategory, type TastePlace } from "./eatsData";
 import { createWorldPath, layoutGeoMarkers, mapHeight, mapWidth, type LandCollection } from "./mapGeometry";
 
@@ -14,8 +13,8 @@ function mapsHref(place: Pick<TastePlace, "name" | "city">) {
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${place.name}, ${place.city}`)}`;
 }
 
-function formatExportDate(value: string) {
-  if (!value) return "recent export";
+function formatUpdatedDate(value: string) {
+  if (!value) return "recently";
   return new Intl.DateTimeFormat("en", {
     month: "short",
     day: "numeric",
@@ -106,15 +105,15 @@ export function EatsArchive() {
     <section className="taste-archive" aria-labelledby="taste-archive-title">
       <div className="taste-archive-meta">
         <div>
-          <span>beli export · updated {formatExportDate(eatsData.updatedAt)}</span>
+          <span>updated {formatUpdatedDate(eatsData.updatedAt)}</span>
           <h2 id="taste-archive-title">where i've eaten, so far.</h2>
         </div>
         <a href="https://beliapp.co/app/jkorr" target="_blank" rel="noreferrer">
-          full rankings on beli <span aria-hidden="true">↗</span>
+          my beli
         </a>
       </div>
 
-      <div className="taste-archive-stats" aria-label="Beli export summary">
+      <div className="taste-archive-stats" aria-label="Beli summary">
         <span><strong>{eatsData.totalPlaces}</strong> ranked</span>
         <span><strong>{eatsData.uniqueCities}</strong> cities</span>
         <span><strong>{eatsData.photographedPlaces}</strong> photographed</span>
@@ -134,7 +133,7 @@ export function EatsArchive() {
             aria-labelledby="eats-map-title eats-map-description"
           >
             <title id="eats-map-title">Regional map of Jathin's ranked places</title>
-            <desc id="eats-map-description">Ranked places from the Beli export are aggregated into regional markers.</desc>
+            <desc id="eats-map-description">Ranked places from my Beli data are aggregated into regional markers.</desc>
             {worldPath ? <path className="eats-atlas-land" d={worldPath} /> : null}
             {markers.filter(({ isDisplaced }) => isDisplaced).map(({ item, anchor, point }) => (
               <g key={`${item.slug}-tether`} aria-hidden="true">
@@ -275,22 +274,19 @@ export function EatsArchive() {
                   <small>{place.category}</small>
                 </span>
                 <span className="eats-place-name">
-                  <strong>{place.name}</strong>
+                  <a
+                    href={mapsHref(place)}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={`Find ${place.name} in ${place.city} on Google Maps`}
+                  >
+                    <strong>{place.name}</strong>
+                  </a>
                   <small>
                     {place.city}
                     {place.photos.some(({ isFavoriteDish }) => isFavoriteDish) ? " · favorite dish captured" : ""}
                   </small>
                 </span>
-                <a
-                  className="eats-place-location"
-                  href={mapsHref(place)}
-                  target="_blank"
-                  rel="noreferrer"
-                  aria-label={`Find ${place.name} in ${place.city} on Google Maps`}
-                >
-                  <FaLocationDot aria-hidden="true" />
-                  <span>google maps</span>
-                </a>
               </li>
             ))}
           </ol>
@@ -306,7 +302,7 @@ export function EatsArchive() {
       </div>
 
       <p className="taste-prototype-note">
-        a snapshot of my Beli data, recut as a browsable atlas. ranks are within each category; maps opens a live location search.
+        a snapshot of my Beli data, recut as a browsable atlas. ranks are within each category; restaurant names open their live location search.
       </p>
 
       <dialog
@@ -362,14 +358,17 @@ export function EatsArchive() {
               </div>
               <figcaption>
                 <span>
-                  <strong>{gallery.place.name}</strong>
+                  <a
+                    href={mapsHref(gallery.place)}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={`Find ${gallery.place.name} in ${gallery.place.city} on Google Maps`}
+                  >
+                    <strong>{gallery.place.name}</strong>
+                  </a>
                   <small>{gallery.place.city}</small>
                 </span>
                 {gallery.place.photos[gallery.index].isFavoriteDish ? <em>favorite dish</em> : null}
-                <a href={mapsHref(gallery.place)} target="_blank" rel="noreferrer">
-                  <FaLocationDot aria-hidden="true" />
-                  <span>google maps</span>
-                </a>
               </figcaption>
             </figure>
           </div>

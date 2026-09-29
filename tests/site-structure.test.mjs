@@ -122,12 +122,15 @@ test("preserves typography, themes, spotlight, and responsive navigation", async
   assert.match(travelMap, /what i've seen, so far\./i);
   assert.match(travelMap, /hover to preview; select to explore the adventure/i);
   assert.match(eatsArchive, /where i've eaten, so far\./i);
-  assert.match(eatsArchive, /full rankings on beli/i);
+  assert.match(eatsArchive, />\s*my beli\s*</i);
+  assert.match(eatsArchive, /<span>updated \{formatUpdatedDate\(eatsData\.updatedAt\)\}<\/span>/i);
+  assert.doesNotMatch(eatsArchive, /full rankings on beli|beli export/i);
   assert.match(eatsArchive, /select a region to open its local index/i);
   assert.match(eatsArchive, /type="search"/i);
   assert.match(eatsArchive, /eats-place-index/i);
   assert.match(eatsArchive, /google\.com\/maps\/search\/\?api=1/i);
-  assert.match(eatsArchive, /google maps/i);
+  assert.match(eatsArchive, /className="eats-place-name"[\s\S]*href=\{mapsHref\(place\)\}/i);
+  assert.doesNotMatch(eatsArchive, /className="eats-place-location"/i);
   assert.match(eatsArchive, /with photos/i);
   assert.match(eatsArchive, /className="eats-photo-dialog"/i);
   assert.match(eatsArchive, /className="eats-photo-arrow is-previous"/i);

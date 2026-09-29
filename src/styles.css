@@ -906,7 +906,7 @@ button {
 
 .eats-place-index li {
   display: grid;
-  grid-template-columns: 3.1rem 3.75rem minmax(0, 1fr) auto;
+  grid-template-columns: 3.1rem 3.75rem minmax(0, 1fr);
   gap: 0.9rem;
   align-items: center;
   min-height: 4.2rem;
@@ -1003,30 +1003,19 @@ button {
   white-space: nowrap;
 }
 
-.eats-place-location {
-  display: inline-flex;
-  gap: 0.32rem;
-  align-items: center;
-  padding: 0.34rem 0.5rem;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: var(--surface);
+.eats-place-name > a {
+  width: fit-content;
+  max-width: 100%;
   color: var(--text);
-  font-size: 0.68rem;
-  text-align: right;
-  white-space: nowrap;
 }
 
-.eats-place-location:hover,
-.eats-place-location:focus-visible {
-  border-color: var(--accent);
+.eats-place-name > a:hover,
+.eats-place-name > a:focus-visible,
+.eats-photo-viewer figcaption > span > a:hover,
+.eats-photo-viewer figcaption > span > a:focus-visible {
   color: var(--accent);
-}
-
-.eats-place-location svg,
-.eats-photo-viewer figcaption a svg {
-  width: 0.65rem;
-  height: 0.65rem;
+  text-decoration: underline;
+  text-underline-offset: 0.24em;
 }
 
 .eats-show-more {
@@ -1193,6 +1182,12 @@ button {
   white-space: nowrap;
 }
 
+.eats-photo-viewer figcaption > span > a {
+  width: fit-content;
+  max-width: 100%;
+  color: var(--text);
+}
+
 .eats-photo-viewer figcaption small,
 .eats-photo-viewer figcaption em {
   color: var(--muted);
@@ -1208,11 +1203,6 @@ button {
   white-space: nowrap;
 }
 
-.eats-photo-viewer figcaption a {
-  display: inline-flex;
-  gap: 0.32rem;
-  align-items: center;
-}
 
 .travel-page {
   width: min(100%, 50rem);
@@ -1780,12 +1770,6 @@ button {
   .eats-place-index li {
     grid-template-columns: 3.1rem 3.1rem minmax(0, 1fr);
     gap: 0.55rem;
-  }
-
-  .eats-place-location {
-    grid-column: 3;
-    justify-self: start;
-    margin-top: -0.55rem;
   }
 
   .eats-place-name strong {
