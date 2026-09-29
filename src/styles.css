@@ -1004,17 +1004,29 @@ button {
 }
 
 .eats-place-location {
-  padding: 0.25rem 0;
-  border-bottom: 1px solid transparent;
-  color: var(--muted);
-  font-size: 0.66rem;
+  display: inline-flex;
+  gap: 0.32rem;
+  align-items: center;
+  padding: 0.34rem 0.5rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.68rem;
   text-align: right;
+  white-space: nowrap;
 }
 
 .eats-place-location:hover,
 .eats-place-location:focus-visible {
-  border-bottom-color: currentColor;
-  color: var(--text);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.eats-place-location svg,
+.eats-photo-viewer figcaption a svg {
+  width: 0.65rem;
+  height: 0.65rem;
 }
 
 .eats-show-more {
@@ -1071,7 +1083,6 @@ button {
 }
 
 .eats-photo-viewer-meta,
-.eats-photo-viewer-controls,
 .eats-photo-viewer figcaption {
   display: flex;
   align-items: center;
@@ -1104,13 +1115,64 @@ button {
   margin: 0;
 }
 
-.eats-photo-viewer figure > img {
+.eats-photo-stage {
+  position: relative;
+  display: grid;
+  min-height: min(68vh, 38rem);
+  place-items: center;
+  overflow: hidden;
+  border-radius: 0.18rem;
+  background: var(--surface);
+}
+
+.eats-photo-stage > img {
   display: block;
   width: 100%;
   max-height: min(68vh, 38rem);
-  border-radius: 0.18rem;
   object-fit: contain;
-  background: var(--surface);
+}
+
+.eats-photo-arrow {
+  position: absolute;
+  top: 50%;
+  display: grid;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  place-items: center;
+  border: 1px solid rgb(255 255 255 / 0.34);
+  border-radius: 50%;
+  background: rgb(5 5 5 / 0.68);
+  color: #fff;
+  font-family: Arial, sans-serif;
+  font-size: 2rem;
+  line-height: 0.8;
+  opacity: 0.9;
+  transform: translateY(-50%);
+  backdrop-filter: blur(8px);
+  transition: background 160ms ease, opacity 160ms ease, transform 160ms ease;
+}
+
+.eats-photo-arrow.is-previous {
+  left: 0.7rem;
+}
+
+.eats-photo-arrow.is-next {
+  right: 0.7rem;
+}
+
+.eats-photo-arrow:hover,
+.eats-photo-arrow:focus-visible {
+  background: rgb(5 5 5 / 0.84);
+  color: #fff;
+  opacity: 1;
+  text-decoration: none;
+  transform: translateY(-50%) scale(1.06);
+}
+
+.eats-photo-arrow:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
 }
 
 .eats-photo-viewer figcaption {
@@ -1146,9 +1208,10 @@ button {
   white-space: nowrap;
 }
 
-.eats-photo-viewer-controls {
-  padding: 0.65rem 0.15rem 0.05rem;
-  border-top: 1px solid var(--line);
+.eats-photo-viewer figcaption a {
+  display: inline-flex;
+  gap: 0.32rem;
+  align-items: center;
 }
 
 .travel-page {

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { FaLocationDot } from "react-icons/fa6";
 import { eatsData, type TasteCategory, type TastePlace } from "./eatsData";
 import { createWorldPath, layoutGeoMarkers, mapHeight, mapWidth, type LandCollection } from "./mapGeometry";
 
@@ -93,6 +94,13 @@ export function EatsArchive() {
   const activeCityCount = activeCity === "all"
     ? activeRegion.placeCount
     : activeRegion.cities.find(({ name }) => name === activeCity)?.placeCount ?? 0;
+
+  const moveGallery = (direction: -1 | 1) => {
+    setGallery((current) => current && ({
+      ...current,
+      index: (current.index + direction + current.place.photos.length) % current.place.photos.length,
+    }));
+  };
 
   return (
     <section className="taste-archive" aria-labelledby="taste-archive-title">
@@ -280,7 +288,8 @@ export function EatsArchive() {
                   rel="noreferrer"
                   aria-label={`Find ${place.name} in ${place.city} on Google Maps`}
                 >
-                  maps
+                  <FaLocationDot aria-hidden="true" />
+                  <span>google maps</span>
                 </a>
               </li>
             ))}
@@ -308,6 +317,10 @@ export function EatsArchive() {
         onClick={(event) => {
           if (event.target === event.currentTarget) event.currentTarget.close();
         }}
+        onKeyDown={(event) => {
+          if (event.key === "ArrowLeft") moveGallery(-1);
+          if (event.key === "ArrowRight") moveGallery(1);
+        }}
       >
         {gallery ? (
           <div className="eats-photo-viewer">
@@ -318,42 +331,47 @@ export function EatsArchive() {
               </form>
             </div>
             <figure>
-              <img
-                src={gallery.place.photos[gallery.index].url}
-                alt={`At ${gallery.place.name} in ${gallery.place.city}`}
-                decoding="async"
-              />
+              <div className="eats-photo-stage">
+                <img
+                  src={gallery.place.photos[gallery.index].url}
+                  alt={`At ${gallery.place.name} in ${gallery.place.city}`}
+                  decoding="async"
+                />
+                {gallery.place.photos.length > 1 ? (
+                  <>
+                    <button
+                      className="eats-photo-arrow is-previous"
+                      type="button"
+                      aria-label="Previous photo"
+                      aria-keyshortcuts="ArrowLeft"
+                      onClick={() => moveGallery(-1)}
+                    >
+                      <span aria-hidden="true">‹</span>
+                    </button>
+                    <button
+                      className="eats-photo-arrow is-next"
+                      type="button"
+                      aria-label="Next photo"
+                      aria-keyshortcuts="ArrowRight"
+                      onClick={() => moveGallery(1)}
+                    >
+                      <span aria-hidden="true">›</span>
+                    </button>
+                  </>
+                ) : null}
+              </div>
               <figcaption>
                 <span>
                   <strong>{gallery.place.name}</strong>
                   <small>{gallery.place.city}</small>
                 </span>
                 {gallery.place.photos[gallery.index].isFavoriteDish ? <em>favorite dish</em> : null}
-                <a href={mapsHref(gallery.place)} target="_blank" rel="noreferrer">view on maps</a>
+                <a href={mapsHref(gallery.place)} target="_blank" rel="noreferrer">
+                  <FaLocationDot aria-hidden="true" />
+                  <span>google maps</span>
+                </a>
               </figcaption>
             </figure>
-            {gallery.place.photos.length > 1 ? (
-              <div className="eats-photo-viewer-controls">
-                <button
-                  type="button"
-                  onClick={() => setGallery((current) => current && ({
-                    ...current,
-                    index: (current.index - 1 + current.place.photos.length) % current.place.photos.length,
-                  }))}
-                >
-                  previous
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setGallery((current) => current && ({
-                    ...current,
-                    index: (current.index + 1) % current.place.photos.length,
-                  }))}
-                >
-                  next
-                </button>
-              </div>
-            ) : null}
           </div>
         ) : null}
       </dialog>

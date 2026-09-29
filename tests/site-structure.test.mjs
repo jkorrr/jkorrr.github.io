@@ -127,8 +127,12 @@ test("preserves typography, themes, spotlight, and responsive navigation", async
   assert.match(eatsArchive, /type="search"/i);
   assert.match(eatsArchive, /eats-place-index/i);
   assert.match(eatsArchive, /google\.com\/maps\/search\/\?api=1/i);
+  assert.match(eatsArchive, /google maps/i);
   assert.match(eatsArchive, /with photos/i);
   assert.match(eatsArchive, /className="eats-photo-dialog"/i);
+  assert.match(eatsArchive, /className="eats-photo-arrow is-previous"/i);
+  assert.match(eatsArchive, /className="eats-photo-arrow is-next"/i);
+  assert.doesNotMatch(eatsArchive, /eats-photo-viewer-controls/i);
   assert.match(eatsArchive, /fetch\("\/world-land\.geojson"\)/i);
   assert.match(eatsData, /"isPlaceholder":\s*false/i);
   assert.match(eatsData, /"totalPlaces":\s*531/i);
