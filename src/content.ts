@@ -47,6 +47,21 @@ export interface LifePageContent {
   title: "fitness" | "eats" | "travel";
   description: string;
   emptyLabel: string;
+  training?: {
+    philosophy: string;
+    goals: Array<{
+      label: string;
+      target: string;
+      note: string;
+    }>;
+    logs: Array<{
+      platform: "hevy" | "strava";
+      label: string;
+      title: string;
+      summary: string;
+      href: string;
+    }>;
+  };
   destination?: {
     iconSrc?: string;
     label: string;
@@ -60,10 +75,6 @@ export interface LifePageContent {
 export interface SiteContent {
   hero: string;
   now: string;
-  about: {
-    portraitCaption: string;
-    paragraphs: string[];
-  };
   work: {
     description: string;
     areas: WorkArea[];
@@ -84,10 +95,6 @@ export interface SiteContent {
 export const siteContent: SiteContent = {
   hero: "hi, i’m jathin.",
   now: "i’m a recent berkeley eecs grad, raised in la. i write about my raw, unfiltered thoughts on the world across travel, tech, fitness, & food. right now, i’m exploring infra + performance problems @ openai.",
-  about: {
-    portraitCaption: "me @ cal hacks freshman year",
-    paragraphs: ["PLACEHOLDER"],
-  },
   work: {
     description: "a small index of what i’m exploring.",
     areas: [
@@ -183,8 +190,39 @@ export const siteContent: SiteContent = {
   life: [
     {
       title: "fitness",
-      description: "training notes, routines, and things i’m testing on myself.",
+      description: "training both ends of the spectrum: stronger under the bar, steadier on the road.",
       emptyLabel: "fitness notes will live here.",
+      training: {
+        philosophy: "build a body that can do more than one thing well. lift heavy, run long, recover honestly, and keep showing up.",
+        goals: [
+          {
+            label: "marathon",
+            target: "26.2 mi",
+            note: "building the engine, one long run at a time.",
+          },
+          {
+            label: "bench press",
+            target: "225 lb",
+            note: "two plates, clean and controlled.",
+          },
+        ],
+        logs: [
+          {
+            platform: "hevy",
+            label: "strength log",
+            title: "hevy",
+            summary: "sets, reps, and the climb to 225.",
+            href: "https://hevy.com/user/jkorr45",
+          },
+          {
+            platform: "strava",
+            label: "running log",
+            title: "strava",
+            summary: "miles, routes, and the road to 26.2.",
+            href: "https://strava.app.link/nEp0AbPaB7b",
+          },
+        ],
+      },
       items: [],
     },
     {

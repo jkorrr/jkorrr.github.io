@@ -1,13 +1,13 @@
 import { motion, useReducedMotion } from "motion/react";
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
-import { FaGithub, FaInstagram, FaLinkedinIn } from "react-icons/fa6";
+import { FaDumbbell, FaGithub, FaInstagram, FaLinkedinIn, FaPersonRunning } from "react-icons/fa6";
 import { siteContent, type LifePageContent, type SocialPlatform, type TravelPlace } from "./content";
 import { TravelMap } from "./TravelMap";
 
 const EatsArchive = lazy(() => import("./EatsArchive").then((module) => ({ default: module.EatsArchive })));
 
 type Theme = "dark" | "light";
-type PageId = "home" | "about" | "work" | "thoughts" | "fitness" | "eats" | "travel" | "travel-detail";
+type PageId = "home" | "work" | "thoughts" | "fitness" | "eats" | "travel" | "travel-detail";
 
 const themeStorageKey = "jkorr-theme";
 const lifePages = siteContent.life.map((page) => ({ label: page.title, href: `/${page.title}/` }));
@@ -28,7 +28,7 @@ function getTravelSlug() {
 function getCurrentPage(): PageId {
   if (getTravelSlug()) return "travel-detail";
   const segment = window.location.pathname.split("/").filter(Boolean).at(-1);
-  return segment === "about" || segment === "work" || segment === "thoughts" || segment === "fitness" || segment === "eats" || segment === "travel"
+  return segment === "work" || segment === "thoughts" || segment === "fitness" || segment === "eats" || segment === "travel"
     ? segment
     : "home";
 }
@@ -135,7 +135,6 @@ function Header({ currentPage, theme, onToggleTheme }: { currentPage: PageId; th
         <a href="/#now">now</a>
         <a href="/work/" aria-current={currentPage === "work" ? "page" : undefined}>work</a>
         <a href="/thoughts/" aria-current={currentPage === "thoughts" ? "page" : undefined}>thoughts</a>
-        <a href="/about/" aria-current={currentPage === "about" ? "page" : undefined}>about</a>
         <div className="life-nav" ref={lifeRef}>
           <button
             type="button"
@@ -311,52 +310,53 @@ function ThoughtsPage() {
   );
 }
 
-function LifePage({ page }: { page: LifePageContent }) {
+function FitnessPage({ page }: { page: LifePageContent }) {
+  if (!page.training) return null;
+
   return (
-    <main id="main-content" className="document-page">
+    <main id="main-content" className="document-page fitness-page">
       <DocumentIntro section="life" title={page.title} description={page.description} />
-      {page.destination ? (
-        <a className="life-destination" href={page.destination.href} target="_blank" rel="noreferrer">
-          {page.destination.iconSrc ? (
-            <img className="life-destination-icon" src={page.destination.iconSrc} alt="" width="400" height="400" />
-          ) : null}
-          <div className="life-destination-copy">
-            <span className="life-destination-label">{page.destination.label}</span>
-            <h2>{page.destination.title}</h2>
-            <p>{page.destination.summary}</p>
-          </div>
-          <span className="life-destination-arrow" aria-hidden="true">↗</span>
-        </a>
-      ) : null}
-      {page.items.length ? (
-        <ol className="document-list">
-          {page.items.map((item) => (
-            <li key={item.href ?? item.title}>
-              {item.href ? <a href={item.href}>{item.title}</a> : <span>{item.title}</span>}
-              {item.date ? <time dateTime={item.date}>{item.date}</time> : null}
-              {item.summary ? <p>{item.summary}</p> : null}
+      <div className="training-axis" aria-label="training across strength and endurance">
+        <span>strength</span>
+        <span className="training-axis-track" aria-hidden="true"><i /><i /></span>
+        <span>endurance</span>
+      </div>
+
+      <section className="fitness-philosophy" aria-labelledby="fitness-philosophy-title">
+        <h2 id="fitness-philosophy-title">philosophy</h2>
+        <p>{page.training.philosophy}</p>
+      </section>
+
+      <section className="training-goals" aria-labelledby="training-goals-title">
+        <h2 id="training-goals-title">training for</h2>
+        <ol>
+          {page.training.goals.map((goal) => (
+            <li key={goal.label}>
+              <span>{goal.label}</span>
+              <strong>{goal.target}</strong>
+              <p>{goal.note}</p>
             </li>
           ))}
         </ol>
-      ) : page.destination ? null : <div className="empty-document"><span>documentation in progress</span><p>{page.emptyLabel}</p></div>}
-    </main>
-  );
-}
-
-function AboutPage() {
-  return (
-    <main id="main-content" className="document-page about-page">
-      <DocumentIntro section="about" title="about" />
-      <section className="about-profile" aria-labelledby="about-profile-title">
-        <figure>
-          <img src="/jathin-portrait.jpg" alt="portrait of jathin" width="512" height="512" />
-          <figcaption>{siteContent.about.portraitCaption}</figcaption>
-        </figure>
-        <div className="about-copy">
-          <h2 id="about-profile-title">a little more context.</h2>
-          {siteContent.about.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
-        </div>
       </section>
+
+      <nav className="training-logs" aria-label="live training logs">
+        {page.training.logs.map((log, index) => {
+          const Icon = log.platform === "hevy" ? FaDumbbell : FaPersonRunning;
+          return (
+            <a key={log.platform} href={log.href} target="_blank" rel="noreferrer">
+              <span className="training-log-number">0{index + 1}</span>
+              <Icon className="training-log-icon" aria-hidden="true" />
+              <span className="training-log-copy">
+                <small>{log.label}</small>
+                <strong>{log.title}</strong>
+                <span>{log.summary}</span>
+              </span>
+              <span className="training-log-arrow" aria-hidden="true">↗</span>
+            </a>
+          );
+        })}
+      </nav>
     </main>
   );
 }
@@ -431,7 +431,6 @@ function TravelDetailPage({ place }: { place: TravelPlace }) {
 }
 
 function Page({ id }: { id: PageId }) {
-  if (id === "about") return <AboutPage />;
   if (id === "work") return <WorkPage />;
   if (id === "thoughts") return <ThoughtsPage />;
   if (id === "eats") return <EatsPage />;
@@ -442,7 +441,7 @@ function Page({ id }: { id: PageId }) {
   }
   if (id === "fitness") {
     const page = siteContent.life.find((entry) => entry.title === id)!;
-    return <LifePage page={page} />;
+    return <FitnessPage page={page} />;
   }
   return <HomePage />;
 }

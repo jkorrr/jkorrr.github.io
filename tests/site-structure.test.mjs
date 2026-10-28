@@ -5,10 +5,9 @@ import test from "node:test";
 const distRoot = new URL("../dist/", import.meta.url);
 const sourceRoot = new URL("../src/", import.meta.url);
 
-test("builds the homepage, documentation pages, and seven travel journals", async () => {
+test("builds the homepage, focused documentation pages, and seven travel journals", async () => {
   const pages = [
     ["index.html", /<title>jathin<\/title>/i],
-    ["about/index.html", /<title>about — jathin<\/title>/i],
     ["work/index.html", /<title>work — jathin<\/title>/i],
     ["thoughts/index.html", /<title>thoughts — jathin<\/title>/i],
     ["fitness/index.html", /<title>fitness — jathin<\/title>/i],
@@ -31,6 +30,8 @@ test("builds the homepage, documentation pages, and seven travel journals", asyn
     assert.match(html, /localStorage\.getItem\("jkorr-theme"\)/i);
     assert.match(html, /id="root"/i);
   }
+
+  await assert.rejects(access(new URL("about/index.html", distRoot)));
 });
 
 test("keeps the horizontal homepage and adds an accessible life dropdown", async () => {
@@ -40,7 +41,7 @@ test("keeps the horizontal homepage and adds an accessible life dropdown", async
   assert.match(app, /href="\/#now"/i);
   assert.match(app, /href="\/work\/"/i);
   assert.match(app, /href="\/thoughts\/"/i);
-  assert.match(app, /href="\/about\/"/i);
+  assert.doesNotMatch(app, /href="\/about\/"|function AboutPage/i);
   assert.match(app, /aria-expanded=\{lifeOpen\}/i);
   assert.match(app, /aria-controls="life-menu"/i);
   assert.match(app, /event\.key === "Escape"/i);
@@ -51,7 +52,7 @@ test("keeps the horizontal homepage and adds an accessible life dropdown", async
   assert.doesNotMatch(homePage, /siteContent\.work\.areas\.map/i);
   assert.match(app, /function WorkPage\(\)[\s\S]*siteContent\.work\.areas\.map/i);
   assert.match(app, /function ThoughtsPage\(\)[\s\S]*siteContent\.thoughts\.items\.map/i);
-  assert.match(app, /function AboutPage\(\)[\s\S]*className="about-profile"[\s\S]*jathin-portrait\.jpg/i);
+  assert.match(app, /function FitnessPage\([^)]*\)[\s\S]*training-axis[\s\S]*fitness-philosophy[\s\S]*training-goals[\s\S]*training-logs/i);
   assert.match(app, /function EatsPage\(\)[\s\S]*<EatsArchive/i);
   assert.match(app, /function TravelPage\(\)[\s\S]*<TravelMap places=\{siteContent\.travel\.places\}/i);
   assert.doesNotMatch(app, /className="travel-journeys"/i);
@@ -62,8 +63,7 @@ test("keeps the horizontal homepage and adds an accessible life dropdown", async
 test("stores honest Work, Thoughts, and Life content", async () => {
   const content = await readFile(new URL("content.ts", sourceRoot), "utf8");
   assert.match(content, /hero:\s*"hi, i’m jathin\."/i);
-  assert.match(content, /portraitCaption:\s*"me @ cal hacks freshman year"/i);
-  assert.match(content, /paragraphs:\s*\["PLACEHOLDER"\]/i);
+  assert.doesNotMatch(content, /portraitCaption|paragraphs:\s*\["PLACEHOLDER"\]/i);
   assert.match(content, /a small index of what i’m exploring/i);
   assert.match(content, /engineering[\s\S]*https:\/\/github\.com\/jkorrr/i);
   assert.match(content, /research[\s\S]*scholar\.google\.com\/citations\?view_op=new_articles/i);
@@ -73,6 +73,12 @@ test("stores honest Work, Thoughts, and Life content", async () => {
   assert.match(content, /https:\/\/jkorr\.substack\.com\/p\/do-hard-shit/i);
   assert.match(content, /https:\/\/substack\.com\/@jkorr/i);
   assert.match(content, /title:\s*"fitness"[\s\S]*items:\s*\[\]/i);
+  assert.match(content, /title:\s*"fitness"[\s\S]*training both ends of the spectrum/i);
+  assert.match(content, /philosophy:[\s\S]*lift heavy, run long, recover honestly/i);
+  assert.match(content, /label:\s*"marathon"[\s\S]*target:\s*"26\.2 mi"/i);
+  assert.match(content, /label:\s*"bench press"[\s\S]*target:\s*"225 lb"/i);
+  assert.match(content, /https:\/\/hevy\.com\/user\/jkorr45/i);
+  assert.match(content, /https:\/\/strava\.app\.link\/nEp0AbPaB7b/i);
   assert.match(content, /title:\s*"eats"[\s\S]*items:\s*\[\]/i);
   assert.match(content, /title:\s*"eats"[\s\S]*https:\/\/beliapp\.co\/app\/jkorr/i);
   assert.match(content, /a life worth living to eat in/i);
@@ -109,13 +115,16 @@ test("preserves typography, themes, spotlight, and responsive navigation", async
   assert.match(styles, /--font-serif:\s*Georgia/i);
   assert.match(styles, /\.life-menu/i);
   assert.match(styles, /\.document-page/i);
-  assert.match(styles, /\.life-destination/i);
+  assert.match(styles, /\.training-axis/i);
+  assert.match(styles, /\.fitness-philosophy/i);
+  assert.match(styles, /\.training-goals/i);
+  assert.match(styles, /\.training-logs/i);
   assert.match(styles, /\.taste-archive/i);
   assert.match(styles, /\.travel-map-marker/i);
   assert.match(styles, /\.travel-journal-outline/i);
   assert.doesNotMatch(app, /className="hero-portrait"/i);
   assert.match(styles, /\.hero-illustration/i);
-  assert.match(styles, /\.about-profile/i);
+  assert.doesNotMatch(styles, /\.about-profile|\.life-destination/i);
   assert.match(travelMap, /fetch\("\/world-land\.geojson"\)/i);
   assert.match(travelMap, /aria-labelledby="travel-map-title travel-map-description"/i);
   assert.doesNotMatch(travelMap, /field atlas/i);
@@ -162,7 +171,7 @@ test("emits shared compiled assets and favicon", async () => {
   await access(new URL(stylesheet.replace(/^\//, ""), distRoot));
   await access(new URL("favicon.svg", distRoot));
   await access(new URL("beli-icon.webp", distRoot));
-  await access(new URL("jathin-portrait.jpg", distRoot));
+  await assert.rejects(access(new URL("jathin-portrait.jpg", distRoot)));
   await access(new URL("jathin-illustrated.webp", distRoot));
   await access(new URL("world-land.geojson", distRoot));
 });
