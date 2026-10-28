@@ -224,6 +224,15 @@ function HomePage() {
     <main id="main-content">
       <motion.section className="hero" initial={reduceMotion ? false : { opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45 }} aria-labelledby="hero-title">
         <h1 id="hero-title">{siteContent.hero}</h1>
+        <figure className="hero-illustration">
+          <img
+            src="/jathin-illustrated.webp"
+            alt="hand-drawn portrait of Jathin"
+            width="720"
+            height="884"
+            decoding="async"
+          />
+        </figure>
       </motion.section>
       <Section id="now" title="now">
         <p>{siteContent.now}</p>

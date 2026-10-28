@@ -47,6 +47,7 @@ test("keeps the horizontal homepage and adds an accessible life dropdown", async
   assert.match(app, /fitness[\s\S]*eats[\s\S]*travel/i);
   assert.match(homePage, /<Section id="work" title="work">[\s\S]*open the index/i);
   assert.doesNotMatch(homePage, /jathin-portrait\.jpg/i);
+  assert.match(homePage, /className="hero-illustration"[\s\S]*jathin-illustrated\.webp[\s\S]*hand-drawn portrait of Jathin/i);
   assert.doesNotMatch(homePage, /siteContent\.work\.areas\.map/i);
   assert.match(app, /function WorkPage\(\)[\s\S]*siteContent\.work\.areas\.map/i);
   assert.match(app, /function ThoughtsPage\(\)[\s\S]*siteContent\.thoughts\.items\.map/i);
@@ -113,6 +114,7 @@ test("preserves typography, themes, spotlight, and responsive navigation", async
   assert.match(styles, /\.travel-map-marker/i);
   assert.match(styles, /\.travel-journal-outline/i);
   assert.doesNotMatch(app, /className="hero-portrait"/i);
+  assert.match(styles, /\.hero-illustration/i);
   assert.match(styles, /\.about-profile/i);
   assert.match(travelMap, /fetch\("\/world-land\.geojson"\)/i);
   assert.match(travelMap, /aria-labelledby="travel-map-title travel-map-description"/i);
@@ -161,5 +163,6 @@ test("emits shared compiled assets and favicon", async () => {
   await access(new URL("favicon.svg", distRoot));
   await access(new URL("beli-icon.webp", distRoot));
   await access(new URL("jathin-portrait.jpg", distRoot));
+  await access(new URL("jathin-illustrated.webp", distRoot));
   await access(new URL("world-land.geojson", distRoot));
 });
