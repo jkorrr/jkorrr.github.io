@@ -318,7 +318,7 @@ function FitnessPage({ page }: { page: LifePageContent }) {
 
   return (
     <main id="main-content" className="document-page fitness-page">
-      <DocumentIntro section="life" title="reads" description={page.description} />
+      <DocumentIntro section="life" title={page.title} description={page.description} />
       <div className="training-axis" aria-label="training across strength and endurance">
         <span>strength</span>
         <span className="training-axis-track" aria-hidden="true"><i /><i /></span>
@@ -389,7 +389,7 @@ function BooksPage({ page }: { page: LifePageContent }) {
 
   return (
     <main id="main-content" className="document-page books-page">
-      <DocumentIntro section="life" title={page.title} description={page.description} />
+      <DocumentIntro section="life" title="reads" description={page.description} />
       <div className="reading-shelf" aria-label="reading shelf">
         {page.reading.shelves.map((shelf, shelfIndex) => (
           <section key={shelf.label} aria-labelledby={`books-${shelf.label}-title`}>
