@@ -209,7 +209,7 @@ export const siteContent: SiteContent = {
       description: "training both ends of the spectrum: stronger under the bar, steadier on the road.",
       emptyLabel: "fitness notes will live here.",
       training: {
-        philosophy: "build a body that can do more than one thing well. lift heavy, run long, recover honestly, and keep showing up.",
+        philosophy: "move more to eat more",
         goals: [
           {
             label: "marathon",

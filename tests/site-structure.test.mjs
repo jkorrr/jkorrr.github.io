@@ -79,7 +79,7 @@ test("stores honest Work, Thoughts, and Life content", async () => {
   assert.match(content, /https:\/\/substack\.com\/@jkorr/i);
   assert.match(content, /title:\s*"fitness"[\s\S]*items:\s*\[\]/i);
   assert.match(content, /title:\s*"fitness"[\s\S]*training both ends of the spectrum/i);
-  assert.match(content, /philosophy:[\s\S]*lift heavy, run long, recover honestly/i);
+  assert.match(content, /philosophy:\s*"move more to eat more"/i);
   assert.match(content, /label:\s*"marathon"[\s\S]*target:\s*"26\.2 mi"/i);
   assert.match(content, /label:\s*"bench press"[\s\S]*target:\s*"225 lb"/i);
   assert.match(content, /https:\/\/hevy\.com\/user\/jkorr45/i);
