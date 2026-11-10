@@ -28,6 +28,19 @@ export interface DocumentationEntry {
   href?: string;
 }
 
+export interface BookEntry {
+  title: string;
+  author: string;
+  note?: string;
+  href?: string;
+}
+
+export interface BookShelf {
+  label: "reading" | "finished" | "next";
+  emptyLabel: string;
+  items: BookEntry[];
+}
+
 export type TravelStatus = "visited" | "wishlist";
 
 export interface TravelPlace {
@@ -44,7 +57,7 @@ export interface TravelPlace {
 }
 
 export interface LifePageContent {
-  title: "fitness" | "eats" | "travel";
+  title: "fitness" | "eats" | "travel" | "books";
   description: string;
   emptyLabel: string;
   training?: {
@@ -68,6 +81,9 @@ export interface LifePageContent {
     title: string;
     summary: string;
     href: string;
+  };
+  reading?: {
+    shelves: BookShelf[];
   };
   items: DocumentationEntry[];
 }
@@ -242,6 +258,31 @@ export const siteContent: SiteContent = {
       title: "travel",
       description: "places i’ve been, and places i’m still thinking about.",
       emptyLabel: "travel notes will live here.",
+      items: [],
+    },
+    {
+      title: "books",
+      description: "what i’m reading, what stayed with me, and what i’m reaching for next.",
+      emptyLabel: "reading notes will live here.",
+      reading: {
+        shelves: [
+          {
+            label: "reading",
+            emptyLabel: "the current stack will live here.",
+            items: [],
+          },
+          {
+            label: "finished",
+            emptyLabel: "notes from finished books will collect here.",
+            items: [],
+          },
+          {
+            label: "next",
+            emptyLabel: "the next pile is still taking shape.",
+            items: [],
+          },
+        ],
+      },
       items: [],
     },
   ],

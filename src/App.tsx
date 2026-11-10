@@ -7,7 +7,7 @@ import { TravelMap } from "./TravelMap";
 const EatsArchive = lazy(() => import("./EatsArchive").then((module) => ({ default: module.EatsArchive })));
 
 type Theme = "dark" | "light";
-type PageId = "home" | "work" | "thoughts" | "fitness" | "eats" | "travel" | "travel-detail";
+type PageId = "home" | "work" | "thoughts" | "fitness" | "eats" | "travel" | "travel-detail" | "books";
 
 const themeStorageKey = "jkorr-theme";
 const lifePages = siteContent.life.map((page) => ({ label: page.title, href: `/${page.title}/` }));
@@ -28,7 +28,7 @@ function getTravelSlug() {
 function getCurrentPage(): PageId {
   if (getTravelSlug()) return "travel-detail";
   const segment = window.location.pathname.split("/").filter(Boolean).at(-1);
-  return segment === "work" || segment === "thoughts" || segment === "fitness" || segment === "eats" || segment === "travel"
+  return segment === "work" || segment === "thoughts" || segment === "fitness" || segment === "eats" || segment === "travel" || segment === "books"
     ? segment
     : "home";
 }
@@ -88,7 +88,7 @@ function useTheme() {
 function Header({ currentPage, theme, onToggleTheme }: { currentPage: PageId; theme: Theme; onToggleTheme: () => void }) {
   const [lifeOpen, setLifeOpen] = useState(false);
   const lifeRef = useRef<HTMLDivElement>(null);
-  const lifeActive = currentPage === "fitness" || currentPage === "eats" || currentPage === "travel" || currentPage === "travel-detail";
+  const lifeActive = currentPage === "fitness" || currentPage === "eats" || currentPage === "travel" || currentPage === "travel-detail" || currentPage === "books";
 
   useEffect(() => {
     if (!lifeOpen) return;
@@ -381,6 +381,41 @@ function EatsPage() {
   );
 }
 
+function BooksPage({ page }: { page: LifePageContent }) {
+  if (!page.reading) return null;
+
+  return (
+    <main id="main-content" className="document-page books-page">
+      <DocumentIntro section="life" title={page.title} description={page.description} />
+      <div className="reading-shelf" aria-label="reading shelf">
+        {page.reading.shelves.map((shelf, shelfIndex) => (
+          <section key={shelf.label} aria-labelledby={`books-${shelf.label}-title`}>
+            <div className="reading-shelf-heading">
+              <span>0{shelfIndex + 1}</span>
+              <h2 id={`books-${shelf.label}-title`}>{shelf.label}</h2>
+            </div>
+            {shelf.items.length > 0 ? (
+              <ol className="book-list">
+                {shelf.items.map((book) => (
+                  <li key={`${book.title}-${book.author}`}>
+                    <div>
+                      {book.href ? (
+                        <a href={book.href} target="_blank" rel="noreferrer">{book.title} <span aria-hidden="true">↗</span></a>
+                      ) : <strong>{book.title}</strong>}
+                      <span>{book.author}</span>
+                    </div>
+                    {book.note ? <p>{book.note}</p> : null}
+                  </li>
+                ))}
+              </ol>
+            ) : <p className="book-shelf-empty">{shelf.emptyLabel}</p>}
+          </section>
+        ))}
+      </div>
+    </main>
+  );
+}
+
 function TravelDetailPage({ place }: { place: TravelPlace }) {
   const currentIndex = siteContent.travel.places.findIndex((entry) => entry.slug === place.slug);
   const previous = currentIndex > 0 ? siteContent.travel.places[currentIndex - 1] : null;
@@ -435,6 +470,10 @@ function Page({ id }: { id: PageId }) {
   if (id === "thoughts") return <ThoughtsPage />;
   if (id === "eats") return <EatsPage />;
   if (id === "travel") return <TravelPage />;
+  if (id === "books") {
+    const page = siteContent.life.find((entry) => entry.title === id)!;
+    return <BooksPage page={page} />;
+  }
   if (id === "travel-detail") {
     const place = siteContent.travel.places.find((entry) => entry.slug === getTravelSlug())!;
     return <TravelDetailPage place={place} />;

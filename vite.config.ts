@@ -11,6 +11,7 @@ export default defineConfig({
         work: "work/index.html",
         thoughts: "thoughts/index.html",
         fitness: "fitness/index.html",
+        books: "books/index.html",
         eats: "eats/index.html",
         travel: "travel/index.html",
         "travel-belgium": "travel/belgium/index.html",

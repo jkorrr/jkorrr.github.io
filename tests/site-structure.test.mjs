@@ -11,6 +11,7 @@ test("builds the homepage, focused documentation pages, and seven travel journal
     ["work/index.html", /<title>work — jathin<\/title>/i],
     ["thoughts/index.html", /<title>thoughts — jathin<\/title>/i],
     ["fitness/index.html", /<title>fitness — jathin<\/title>/i],
+    ["books/index.html", /<title>books — jathin<\/title>/i],
     ["eats/index.html", /<title>eats — jathin<\/title>/i],
     ["travel/index.html", /<title>travel — jathin<\/title>/i],
     ["travel/belgium/index.html", /<title>belgium — travel — jathin<\/title>/i],
@@ -45,7 +46,7 @@ test("keeps the horizontal homepage and adds an accessible life dropdown", async
   assert.match(app, /aria-expanded=\{lifeOpen\}/i);
   assert.match(app, /aria-controls="life-menu"/i);
   assert.match(app, /event\.key === "Escape"/i);
-  assert.match(app, /fitness[\s\S]*eats[\s\S]*travel/i);
+  assert.match(app, /fitness[\s\S]*eats[\s\S]*travel[\s\S]*books/i);
   assert.match(homePage, /<Section id="work" title="work">[\s\S]*open the index/i);
   assert.doesNotMatch(homePage, /jathin-portrait\.jpg/i);
   assert.match(homePage, /className="hero-illustration"[\s\S]*jathin-illustrated\.webp[\s\S]*hand-drawn portrait of Jathin/i);
@@ -53,6 +54,7 @@ test("keeps the horizontal homepage and adds an accessible life dropdown", async
   assert.match(app, /function WorkPage\(\)[\s\S]*siteContent\.work\.areas\.map/i);
   assert.match(app, /function ThoughtsPage\(\)[\s\S]*siteContent\.thoughts\.items\.map/i);
   assert.match(app, /function FitnessPage\([^)]*\)[\s\S]*training-axis[\s\S]*fitness-philosophy[\s\S]*training-goals[\s\S]*training-logs/i);
+  assert.match(app, /function BooksPage\([^)]*\)[\s\S]*reading-shelf[\s\S]*book-list/i);
   assert.match(app, /function EatsPage\(\)[\s\S]*<EatsArchive/i);
   assert.match(app, /function TravelPage\(\)[\s\S]*<TravelMap places=\{siteContent\.travel\.places\}/i);
   assert.doesNotMatch(app, /className="travel-journeys"/i);
@@ -85,6 +87,7 @@ test("stores honest Work, Thoughts, and Life content", async () => {
   assert.match(content, /beli-icon\.webp[\s\S]*@jkorr on beli[\s\S]*my restaurant map/i);
   assert.match(content, /restaurants i’ve tried, ranked and saved/i);
   assert.match(content, /title:\s*"travel"[\s\S]*items:\s*\[\]/i);
+  assert.match(content, /title:\s*"books"[\s\S]*what i’m reading, what stayed with me[\s\S]*label:\s*"reading"[\s\S]*label:\s*"finished"[\s\S]*label:\s*"next"/i);
   assert.match(content, /travel:[\s\S]*places i’ve been, and places i’m still thinking about/i);
   assert.match(content, /slug:\s*"belgium"[\s\S]*slug:\s*"london"[\s\S]*slug:\s*"amsterdam"/i);
   assert.match(content, /slug:\s*"guatemala"[\s\S]*antigua[\s\S]*acatenango[\s\S]*lake atitlán/i);
@@ -119,6 +122,8 @@ test("preserves typography, themes, spotlight, and responsive navigation", async
   assert.match(styles, /\.fitness-philosophy/i);
   assert.match(styles, /\.training-goals/i);
   assert.match(styles, /\.training-logs/i);
+  assert.match(styles, /\.reading-shelf/i);
+  assert.match(styles, /\.book-list/i);
   assert.match(styles, /\.taste-archive/i);
   assert.match(styles, /\.travel-map-marker/i);
   assert.match(styles, /\.travel-journal-outline/i);
