@@ -10,7 +10,10 @@ type Theme = "dark" | "light";
 type PageId = "home" | "work" | "thoughts" | "fitness" | "eats" | "travel" | "travel-detail" | "books";
 
 const themeStorageKey = "jkorr-theme";
-const lifePages = siteContent.life.map((page) => ({ label: page.title, href: `/${page.title}/` }));
+const lifePages = siteContent.life.map((page) => ({
+  label: page.title === "books" ? "reads" : page.title,
+  href: `/${page.title}/`,
+}));
 
 const socialIcons = {
   github: FaGithub,
@@ -315,7 +318,7 @@ function FitnessPage({ page }: { page: LifePageContent }) {
 
   return (
     <main id="main-content" className="document-page fitness-page">
-      <DocumentIntro section="life" title={page.title} description={page.description} />
+      <DocumentIntro section="life" title="reads" description={page.description} />
       <div className="training-axis" aria-label="training across strength and endurance">
         <span>strength</span>
         <span className="training-axis-track" aria-hidden="true"><i /><i /></span>

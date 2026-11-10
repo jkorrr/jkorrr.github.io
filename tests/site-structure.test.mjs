@@ -11,7 +11,7 @@ test("builds the homepage, focused documentation pages, and seven travel journal
     ["work/index.html", /<title>work — jathin<\/title>/i],
     ["thoughts/index.html", /<title>thoughts — jathin<\/title>/i],
     ["fitness/index.html", /<title>fitness — jathin<\/title>/i],
-    ["books/index.html", /<title>books — jathin<\/title>/i],
+    ["books/index.html", /<title>reads — jathin<\/title>/i],
     ["eats/index.html", /<title>eats — jathin<\/title>/i],
     ["travel/index.html", /<title>travel — jathin<\/title>/i],
     ["travel/belgium/index.html", /<title>belgium — travel — jathin<\/title>/i],
@@ -55,6 +55,7 @@ test("keeps the horizontal homepage and adds an accessible life dropdown", async
   assert.match(app, /function ThoughtsPage\(\)[\s\S]*siteContent\.thoughts\.items\.map/i);
   assert.match(app, /function FitnessPage\([^)]*\)[\s\S]*training-axis[\s\S]*fitness-philosophy[\s\S]*training-goals[\s\S]*training-logs/i);
   assert.match(app, /function BooksPage\([^)]*\)[\s\S]*reading-shelf[\s\S]*book-list/i);
+  assert.match(app, /page\.title === "books" \? "reads" : page\.title/i);
   assert.match(app, /function EatsPage\(\)[\s\S]*<EatsArchive/i);
   assert.match(app, /function TravelPage\(\)[\s\S]*<TravelMap places=\{siteContent\.travel\.places\}/i);
   assert.doesNotMatch(app, /className="travel-journeys"/i);
